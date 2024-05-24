@@ -4,5 +4,8 @@
   "description": "Althea is a full-stack portfolio project focused on creating a centralized platform for streamers and content creators.",
   "main": "index.js",
   "author": "George Testo <xghostvrx@gmail.com>",
-  "license": "GNU PL v3.0"
+  "license": "GNU PL v3.0",
+  "dependencies": {
+    "express": "^4.19.2"
+  }
 }
