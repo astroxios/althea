@@ -18,11 +18,12 @@ Current technologies utilized in this project:
 - **Vite**: A next-generation frontend tooling that significantly improves development experience.
 - **React.js**: A JavaScript library for UI development, maintained by Facebook.
 - **Tailwind CSS**: A utility-first CSS framework for rapid UI development.
+- **PostgreSQL**: A powerful, open-source object-relational database system.
 
 ## Contributions
 
-Community contributions are highly appreciated. However, as this is a portfolio project, responses to pull requests may not be immediate. For more information, please refer to our [contributing guide](CONTRIBUTIONS.md).
+Community contributions are highly appreciated. However, as this is a portfolio project, responses to pull requests may not be immediate. For more information, please refer to our [contributing guide](docs/CONTRIBUTIONS.md).
 
 ## License
 
-This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](LICENSE.md) file for details.
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE](docs/LICENSE.md) file for details.
