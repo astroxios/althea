@@ -1,8 +1,9 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client'
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { AuthenticatedRequest, authenticateToken } from './middleware/auth';
 
 dotenv.config();
 
@@ -12,7 +13,7 @@ const prisma = new PrismaClient();
 app.use(express.json());
 
 // Registration
-app.post('/api/users/register', async (req, res) => {
+app.post('/api/users/register', async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
 
   // Validation
@@ -51,7 +52,7 @@ app.post('/api/users/register', async (req, res) => {
 });
 
 // Login
-app.post('/api/users/login', async (req, res) => {
+app.post('/api/users/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
   // Validation
@@ -72,6 +73,30 @@ app.post('/api/users/login', async (req, res) => {
     const token = jwt.sign({ userId: user.id}, process.env.JWT_SECRET!, { expiresIn: '1h' });
 
     res.status(200).json({ token });
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+});
+
+// User by ID
+app.get('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: parseInt(id) },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+
+    res.json(user);
   } catch (error) {
     res.status(500).send('Server error');
   }
