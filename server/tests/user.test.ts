@@ -28,8 +28,8 @@ describe('User (Registration)', () => {
         const res = await request(app)
             .post('/api/users/register')
             .send({
-                username: 'testuser',
-                email: 'testuser@example.com',
+                username: 'test_user',
+                email: 'test_user@example.com',
                 password: 'password123',
             });
         expect(res.status).toBe(201);
@@ -41,11 +41,40 @@ describe('User (Registration)', () => {
         const res = await request(app)
             .post('/api/users/register')
             .send({
-                username: 'testuser',
-                email: 'testuser@example.com',
+                username: 'test_user',
+                email: 'test_user@example.com',
                 password: 'password123',
             });
         expect(res.status).toBe(409);
         expect(res.text).toBe('User already exists.');
+    });
+});
+
+describe('User (Login)', () => {
+    let token: string;
+
+    it('should login a user sucessfully', async () => {
+        const res = await request(app)
+            .post('/api/users/login')
+            .send({
+                email: 'test_user@example.com',
+                password: 'password123',
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('token');
+        token = res.body.token;
+    });
+
+    it('should not login a user with invalid credentials', async () => {
+        const res = await request(app)
+            .post('/api/users/login')
+            .send({
+                email: 'invalid_user@example.com',
+                password: 'invalid_password',
+            });
+
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Invalid credentials.');
     });
 });
