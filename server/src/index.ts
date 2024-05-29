@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 
 // Registration
-app.post('/api/users', async (req, res) => {
+app.post('/api/users/register', async (req, res) => {
   const { username, email, password } = req.body;
 
   // Validation
