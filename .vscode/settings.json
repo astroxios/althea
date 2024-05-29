@@ -1,0 +1,14 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "Local Server",
+            "username": "Metro1102",
+            "password": "vpCzk!gVZ2jz",
+            "database": "althea"
+        }
+    ]
+}
