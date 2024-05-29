@@ -18,7 +18,7 @@ app.post('/api/users/register', async (req: Request, res: Response) => {
 
   // Validation
   if (!(username && email && password)) {
-    return res.status(400).send('All fields are required.');
+    return res.status(400).send('All fields are required');
   }
 
   try {
@@ -27,7 +27,7 @@ app.post('/api/users/register', async (req: Request, res: Response) => {
     });
 
     if (existingUser) {
-      return res.status(409).send('User already exists.');
+      return res.status(409).send('User already exists');
     }
 
     // Pasword Hashing
@@ -57,7 +57,7 @@ app.post('/api/users/login', async (req: Request, res: Response) => {
 
   // Validation
   if (!(email && password)) {
-    return res.status(400).send('All fields are required.');
+    return res.status(400).send('All fields are required');
   }
 
   try {
@@ -66,7 +66,7 @@ app.post('/api/users/login', async (req: Request, res: Response) => {
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).send('Invalid credentials.');
+      return res.status(401).send('Invalid credentials');
     }
 
     // Create JWT token

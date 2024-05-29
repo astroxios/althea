@@ -7,14 +7,14 @@ interface AuthenticatedRequest extends Request {
 
 const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     const token = req.header('Authorization')?.split(' ')[1];
-    if (!token) return res.status(401).send('Access denied.');
+    if (!token) return res.status(401).send('Access denied');
 
     try {
         const verified = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number};
         req.user = verified;
         next();
     } catch (error) {
-        res.status(400).send('Invalid token.');
+        res.status(400).send('Invalid token');
     }
 };
 

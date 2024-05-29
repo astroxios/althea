@@ -46,7 +46,7 @@ describe('User (Registration)', () => {
                 password: 'password123',
             });
         expect(res.status).toBe(409);
-        expect(res.text).toBe('User already exists.');
+        expect(res.text).toBe('User already exists');
     });
 });
 
@@ -75,6 +75,6 @@ describe('User (Login)', () => {
             });
 
         expect(res.status).toBe(401);
-        expect(res.text).toBe('Invalid credentials.');
+        expect(res.text).toBe('Invalid credentials');
     });
 });
