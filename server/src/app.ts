@@ -78,7 +78,7 @@ app.post('/api/users/login', async (req: Request, res: Response) => {
   }
 });
 
-// User by ID
+// GET User by ID
 app.get('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
 
@@ -97,6 +97,48 @@ app.get('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, r
     }
 
     res.json(user);
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+});
+
+// PATCH User by ID
+app.put('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+  const { username, email, password } = req.body;
+
+  try {
+    // Check if the user exists
+    const existingUser = await prisma.user.findUnique({
+      where: { id: parseInt(id) }
+    });
+
+    if (!existingUser) {
+      return res.status(404).send('User not found');
+    }
+
+    // Hash new password if provided
+    let hashedPassword = existingUser.password;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+    }
+
+    // Update user
+    const updateUser = await prisma.user.update({
+      where: { id: parseInt(id) },
+      data: {
+        username: username || existingUser.username,
+        email: email || existingUser.email,
+        password: hashedPassword,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    res.json(updateUser);
   } catch (error) {
     res.status(500).send('Server error');
   }
