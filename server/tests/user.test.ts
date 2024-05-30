@@ -22,7 +22,7 @@ afterAll(async () => {
     await prisma.$disconnect();
 });
 
-describe('User (Registration)', () => {
+describe('POST /api/users/register', () => {
     let token: string;
 
     it('should register a user successfully', async () => {
@@ -51,7 +51,7 @@ describe('User (Registration)', () => {
     });
 });
 
-describe('User (Login)', () => {
+describe('POST /api/users/login', () => {
     let token: string;
 
     it('should login a user sucessfully', async () => {

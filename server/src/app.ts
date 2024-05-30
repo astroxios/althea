@@ -12,7 +12,7 @@ const prisma = new PrismaClient();
 
 app.use(express.json());
 
-// Registration
+// POST /api/users/register
 app.post('/api/users/register', async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
 
@@ -51,7 +51,7 @@ app.post('/api/users/register', async (req: Request, res: Response) => {
   }
 });
 
-// Login
+// POST /api/users/login
 app.post('/api/users/login', async (req: Request, res: Response) => {
   const { email, password } = req.body;
 
@@ -78,7 +78,7 @@ app.post('/api/users/login', async (req: Request, res: Response) => {
   }
 });
 
-// GET User by ID
+// GET /api/users/:id
 app.get('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
 
@@ -102,7 +102,7 @@ app.get('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, r
   }
 });
 
-// PATCH User by ID
+// PUT /api/users/:id
 app.put('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   const { username, email, password } = req.body;
@@ -166,7 +166,7 @@ app.put('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, r
   }
 });
 
-// DELETE User by ID
+// DELETE /api/users/:id
 app.delete('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
 
