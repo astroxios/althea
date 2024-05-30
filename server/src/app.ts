@@ -166,5 +166,30 @@ app.put('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, r
   }
 });
 
+// DELETE User by ID
+app.delete('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { id } = req.params;
+
+  try {
+    // Check if the user exists
+    const existingUser = await prisma.user.findUnique({
+      where: { id: parseInt(id) }
+    });
+
+    if (!existingUser) {
+      return res.status(404).send('User not found');
+    }
+
+    // Delete user
+    await prisma.user.delete({
+      where: { id: parseInt(id) }
+    });
+
+    res.status(200).send('User deleted successfully');
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+});
+
 export { app };
 
