@@ -191,5 +191,38 @@ app.delete('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest
   }
 });
 
+// GET /api/users
+// FIXME: GET /api/users endpoint should require admin privileges
+app.get('/api/users', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+  const { ids } = req.query;
+
+  if (!ids) {
+    return res.status(400).send('Query parameter "ids" is required');
+  }
+
+  const idArray = (ids as string).split(',').map(id => parseInt(id));
+
+  if (idArray.length > 100) {
+    return res.status(400).send('Cannot retrieve more than 100 users at a time');
+  }
+
+  try {
+    const users = await prisma.user.findMany({
+      where: {
+        id: { in: idArray }
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    res.json(users);
+  } catch (error) {
+    res.status(500).send('Server error');
+  }
+});
+
 export { app };
 
