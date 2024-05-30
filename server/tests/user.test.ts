@@ -2,6 +2,7 @@ import request from 'supertest';
 import { PrismaClient } from '@prisma/client';
 import { app } from '../src/app';
 import dotenv from 'dotenv';
+import { password } from 'bun';
 
 dotenv.config();
 
@@ -79,7 +80,7 @@ describe('User (Login)', () => {
     });
 });
 
-describe('GET /api/users', () => {
+describe('GET /api/users/:id', () => {
     let token: string;
     let userId: number;
 
@@ -138,4 +139,83 @@ describe('GET /api/users', () => {
         expect(res.status).toBe(404);
         expect(res.text).toBe('User not found')
     })
+})
+
+describe('UPDATE /api/users/:id', () => {
+    let token: string;
+    let userId: number;
+
+    beforeAll(async () => {
+        // Register a user to get a valid token and user ID
+        const res = await request(app)
+            .post('/api/users/register')
+            .send({
+                username: 'test_user_3',
+                email: 'test_user_3@example.com',
+                password: 'password123',
+            });
+        token = res.body.token;
+
+        const user = await prisma.user.findUnique({
+            where: { email: 'test_user_3@example.com' },
+        });
+        userId = user?.id!;
+    });
+
+    it('should update a user by ID with a valid token', async () => {
+        const res = await request(app)
+            .put(`/api/users/${userId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                username: 'updated_user_3',
+                email: 'updated_user_3@example.com',
+                password: 'newpassword123',
+            });
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveProperty('id', userId);
+        expect(res.body).toHaveProperty('username', 'updated_user_3');
+        expect(res.body).toHaveProperty('email', 'updated_user_3@example.com');
+    });
+
+    it('should return 404 error for a non-existent user', async () => {
+        const res = await request(app)
+            .put('/api/users/9999')
+            .set('Authorization', `Bearer ${token}`)
+            .send({
+                username: 'non_existent_user',
+                email: 'non_existent_user@example.com',
+                password: 'password123',
+            });
+
+        expect(res.status).toBe(404);
+        expect(res.text).toBe('User not found');
+    });
+
+    it('should deny access with an invalid token', async () => {
+        const res = await request(app)
+            .put(`/api/users/${userId}`)
+            .set('Authorization', 'Bearer invalid_token')
+            .send({
+                username: 'updated_user_3',
+                email: 'updated_user_3@example.com',
+                password: 'newpassword123',
+            });
+
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Invalid token');
+    });
+
+    it('should deny access without a token', async () => {
+        const res = await request(app)
+            .put(`/api/users/${userId}`)
+            .send({
+                username: 'updated_user_3',
+                email: 'updated_user_3@example.com',
+                password: 'newpassword123',
+            });
+
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Access denied');
+    });
 })
