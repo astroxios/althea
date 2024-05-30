@@ -117,6 +117,28 @@ app.put('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, r
       return res.status(404).send('User not found');
     }
 
+    // Check if the new username already exists
+    if (username && username !== existingUser.username) {
+      const existingUsername = await prisma.user.findUnique({
+        where: { username }
+      });
+
+      if (existingUsername) {
+        return res.status(400).send('Username already exists');
+      }
+    }
+
+    // Check if the new email already exists
+    if (email && email !== existingUser.email) {
+      const existingEmail = await prisma.user.findUnique({
+        where: { email }
+      });
+
+      if (existingEmail) {
+        return res.status(400).send('Email already exists');
+      }
+    }
+
     // Hash new password if provided
     let hashedPassword = existingUser.password;
     if (password) {
