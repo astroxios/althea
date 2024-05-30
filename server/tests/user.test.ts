@@ -219,3 +219,60 @@ describe('UPDATE /api/users/:id', () => {
         expect(res.text).toBe('Access denied');
     });
 })
+
+describe('DELETE /api/users/:id', () => {
+    let token: string;
+    let userId: number;
+
+    beforeAll(async () => {
+        // Register a user to get a valid token and user ID
+        const res = await request(app)
+            .post('/api/users/register')
+            .send({
+                username: 'test_user_4',
+                email: 'test_user_4@example.com',
+                password: 'password123',
+            });
+        token = res.body.token;
+
+        const user = await prisma.user.findUnique({
+            where: { email: 'test_user_4@example.com' },
+        });
+        userId = user?.id!;
+    });
+
+    it('should delete a user by ID with a valid token', async () => {
+        const res = await request(app)
+            .delete(`/api/users/${userId}`)
+            .set('Authorization', `Bearer ${token}`)
+
+        expect(res.status).toBe(200);
+        expect(res.text).toBe('User deleted successfully');
+    });
+
+    it('should return 404 error for a non-existent user', async () => {
+        const res = await request(app)
+            .delete('/api/users/9999')
+            .set('Authorization', `Bearer ${token}`)
+
+        expect(res.status).toBe(404);
+        expect(res.text).toBe('User not found');
+    });
+
+    it('should deny access with an invalid token', async () => {
+        const res = await request(app)
+            .delete(`/api/users/${userId}`)
+            .set('Authorization', 'Bearer invalid_token');
+
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Invalid token');
+    });
+
+    it('should deny access without a token', async () => {
+        const res = await request(app)
+            .delete(`/api/users/${userId}`);
+
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Access denied');
+    });
+});
