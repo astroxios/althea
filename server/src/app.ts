@@ -35,6 +35,7 @@ app.post('/api/users/register', async (req: Request, res: Response) => {
 
     // Create a new user
     const user = await prisma.user.create({
+      // FIXME: assign a 'role' during user registration
       data: {
         username,
         email,
