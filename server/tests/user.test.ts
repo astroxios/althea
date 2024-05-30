@@ -269,3 +269,87 @@ describe('DELETE /api/users/:id', () => {
         expect(res.text).toBe('Access denied');
     });
 });
+
+describe('GET /api/users', () => {
+    let token: string;
+    let userId1: number;
+    let userId2: number;
+
+    beforeAll(async () => {
+        // Register two users to get valid tokens and user IDs
+        const res1 = await request(app)
+            .post('/api/users/register')
+            .send({
+                username: 'test_user_5',
+                email: 'test_user_5@example.com',
+                password: 'password123',
+            });
+        token = res1.body.token;
+
+        const res2 = await request(app)
+            .post('/api/users/register')
+            .send({
+                username: 'test_user_6',
+                email: 'test_user_6@example.com',
+                password: 'password123',
+            });
+        // FIXME: a single token is used between 'test_user_5' and 'test_user_6'
+
+        const user1 = await prisma.user.findUnique({
+            where: { email: 'test_user_5@example.com' },
+        });
+        userId1 = user1?.id!;
+
+        const user2 = await prisma.user.findUnique({
+            where: { email: 'test_user_6@example.com' },
+        });
+        userId2 = user2?.id!;
+    });
+
+    it('should get users by IDs with a valid token', async () => {
+        const res = await request(app)
+            .get(`/api/users?ids=${userId1},${userId2}`)
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveLength(2);
+        expect(res.body[0]).toHaveProperty('id', userId1);
+        expect(res.body[1]).toHaveProperty('id', userId2);
+    });
+
+    it('should return an empty array for non-existen user IDs', async () => {
+        const res = await request(app)
+            .get('/api/users?ids=9999,8888')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveLength(0);
+    });
+
+    it('should return users by IDs with an invalid token', async () => {
+        const res = await request(app)
+            .get(`/api/users?ids=${userId1},${userId2}`)
+            .set('Authorization', 'Bearer invalid_token');
+
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Invalid token');
+    });
+
+    it('should deny access without a token', async () => {
+        const res = await request(app)
+            .get(`/api/users?ids=${userId1},${userId2}`);
+
+        expect(res.status).toBe(401);
+        expect(res.text).toBe('Access denied');
+    });
+
+    // FIXME: retrieving all users could be bad, unless with intention
+    it('should return all users if no IDs are specified', async () => {
+        const res = await request(app)
+            .get('/api/users')
+            .set('Authorization', `Bearer ${token}`);
+
+        expect(res.status).toBe(200);
+        expect(res.body).toHaveLength(2); // Adjust if more or less users
+    });
+});
