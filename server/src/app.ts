@@ -102,15 +102,15 @@ app.get('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, r
   }
 });
 
-// PUT /api/users/:id
-app.put('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
+// PATCH /api/users/:id
+app.patch('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { id } = req.params;
   const { username, email, password } = req.body;
 
   try {
     // Check if the user exists
     const existingUser = await prisma.user.findUnique({
-      where: { id: parseInt(id) }
+      where: { id: parseInt(id) },
     });
 
     if (!existingUser) {
@@ -120,7 +120,7 @@ app.put('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, r
     // Check if the new username already exists
     if (username && username !== existingUser.username) {
       const existingUsername = await prisma.user.findUnique({
-        where: { username }
+        where: { username },
       });
 
       if (existingUsername) {
@@ -131,7 +131,7 @@ app.put('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest, r
     // Check if the new email already exists
     if (email && email !== existingUser.email) {
       const existingEmail = await prisma.user.findUnique({
-        where: { email }
+        where: { email },
       });
 
       if (existingEmail) {
