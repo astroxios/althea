@@ -83,6 +83,8 @@ describe('GET /api/users', () => {
     let token: string;
     let userId: number;
 
+    // TODO: modify lookup 'user.id' for existing 'test_user'
+
     beforeAll(async () => {
         // Register a user to get a valid token and user ID
         const res = await request(app)
