@@ -343,13 +343,12 @@ describe('GET /api/users', () => {
         expect(res.text).toBe('Access denied');
     });
 
-    // FIXME: retrieving all users could be bad, unless with intention
-    it('should return all users if no IDs are specified', async () => {
+    it('should return an error if no IDs are specified', async () => {
         const res = await request(app)
             .get('/api/users')
             .set('Authorization', `Bearer ${token}`);
 
-        expect(res.status).toBe(200);
-        expect(res.body).toHaveLength(2); // Adjust if more or less users
+        expect(res.status).toBe(400);
+        expect(res.text).toBe('Query parameter "ids" is required');
     });
 });
