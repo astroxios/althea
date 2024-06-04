@@ -192,7 +192,7 @@ app.delete('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest
 });
 
 // GET /api/users
-// FIXME: GET /api/users endpoint should require admin privileges
+// NOTE: GET /api/users endpoint should only retrieve certain user info
 app.get('/api/users', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { ids } = req.query;
 
