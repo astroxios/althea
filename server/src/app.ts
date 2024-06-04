@@ -193,6 +193,7 @@ app.delete('/api/users/:id', authenticateToken, async (req: AuthenticatedRequest
 
 // GET /api/users
 // NOTE: GET /api/users endpoint should only retrieve certain user info
+// FIXME: Add an error message that appears if one user does not exist
 app.get('/api/users', authenticateToken, async (req: AuthenticatedRequest, res: Response) => {
   const { ids } = req.query;
 
