@@ -34,3 +34,11 @@ export const getUserByEmail = async (email: string) => {
         },
     });
 };
+
+export const getUserById = async (id: number) => {
+    return userModel.findUnique({
+        where: {
+            id,
+        },
+    });
+};

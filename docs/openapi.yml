@@ -56,9 +56,11 @@ paths:
               $ref: '#/components/schemas/LogoutRequest'
       responses:
         '204':
-          description: Successful operation
-        '401':
-          description: Invalid credentials
+          description: Successfully logged out
+        '400':
+          description: No access token provided
+        '500':
+          description: An unexpected error occurred while logging out
   /auth/refresh:
     post:
       operationId: refreshAccessToken
@@ -137,6 +139,8 @@ paths:
                 $ref: "#/components/schemas/User"
         '404':
           description: User not found
+        '500':
+          description: Error retrieving user
     patch:
       operationId: updateUser
       summary: Update a user
