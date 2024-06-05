@@ -1,5 +1,6 @@
 import userModel from "../models/userModel";
 import bcrypt from 'bcryptjs';
+import { generateToken } from '../middleware/auth';
 
 export const createUser = async (email: string, username: string, password: string) => {
     // Check if the email or username already exists
@@ -14,12 +15,15 @@ export const createUser = async (email: string, username: string, password: stri
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    return userModel.create({
+    const user = await userModel.create({
         data: {
             email,
             username,
             password: hashedPassword,
         },
     });
+
+    const token = generateToken({ id: user.id, email: user.email });
+    return { ...user, access_token: token };
 };
 

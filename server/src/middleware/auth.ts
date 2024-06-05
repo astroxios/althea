@@ -1,21 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-interface AuthenticatedRequest extends Request {
-    user?: { userId: number };
-}
+const JWT_SECRET = process.env.JWT_SECRET || 'if_you_see_this_we_know'
 
-const authenticateToken = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-    const token = req.header('Authorization')?.split(' ')[1];
-    if (!token) return res.status(401).send('Access denied');
-
-    try {
-        const verified = jwt.verify(token, process.env.JWT_SECRET!) as { userId: number};
-        req.user = verified;
-        next();
-    } catch (error) {
-        res.status(400).send('Invalid token');
-    }
+export const generateToken = (payload: object) => {
+    return jwt.sign(payload, JWT_SECRET, { expiresIn: '1h'});
 };
-
-export { authenticateToken, AuthenticatedRequest };
