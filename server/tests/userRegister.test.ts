@@ -7,16 +7,10 @@ const prisma = new PrismaClient();
 describe('POST /api/users/register', () => {
 
     beforeAll(async () => {
-        // Connect to the database
-        await prisma.$connect();
-        // Clean up the database before tests
         await prisma.user.deleteMany();
     });
 
     afterAll(async () => {
-        // Clean up the database after tests
-        await prisma.user.deleteMany();
-        // Disconnect the database
         await prisma.$disconnect();
     });
 
@@ -48,7 +42,14 @@ describe('POST /api/users/register', () => {
             .send(invalidUser)
             .expect(400);
 
-        expect(response.body).toHaveProperty('error');
+        expect(response.body).toHaveProperty('errors');
+        expect(response.body.errors).toEqual(
+            expect.arrayContaining([
+                expect.objectContaining({ msg: 'Email must be valid' }),
+                expect.objectContaining({ msg: 'Username must be between 3 and 20 characters long' }),
+                expect.objectContaining({ msg: 'Password must be between 8 and 64 characters long' })
+            ])
+        );
     });
 
     it('should return 409 if the user already exists', async () => {
