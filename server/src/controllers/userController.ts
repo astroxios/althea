@@ -8,6 +8,9 @@ export const registerUser = async (req: Request, res: Response) => {
         res.status(201).json(user);
     } catch (error) {
         if (error instanceof Error) {
+            if (error.message === 'Email already exists' || error.message === 'Username already exists') {
+                return res.status(409).json({ error: error.message });
+            }
             res.status(400).json({ error: error.message });
         } else {
             res.status(400).json({ error: 'An unexpected error occurred' });

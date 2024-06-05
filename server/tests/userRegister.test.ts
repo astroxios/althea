@@ -52,22 +52,53 @@ describe('POST /api/users/register', () => {
         );
     });
 
-    it('should return 409 if the user already exists', async () => {
+    it('should return 409 if the email already exists', async () => {
         const existingUser = {
-            email: 'test_user_2@example.com',
-            username: 'test_user_2',
-            password: 'password123'
+          email: 'test_user_2@example.com',
+          username: 'test_user_2',
+          password: 'password123'
         };
 
         // Register the user first
         await request(app).post('/api/users/register').send(existingUser);
 
-        // Attempt to register the same user again
-        const response = await request(app)
-            .post('/api/users/register')
-            .send(existingUser)
-            .expect(409);
+        // Attempt to register another user with the same email
+        const newUserWithSameEmail = {
+          email: 'test_user_2@example.com',
+          username: 'test_user_3',
+          password: 'password123'
+        };
 
-        expect(response.body).toHaveProperty('error');
+        const response = await request(app)
+          .post('/api/users/register')
+          .send(newUserWithSameEmail)
+          .expect(409);
+
+        expect(response.body).toHaveProperty('error', 'Email already exists');
     });
+
+    it('should return 409 if the username already exists', async () => {
+        const existingUser = {
+          email: 'test_user_3@example.com',
+          username: 'test_user_3',
+          password: 'password123'
+        };
+
+        // Register the user first
+        await request(app).post('/api/users/register').send(existingUser);
+
+        // Attempt to register another user with the same username
+        const newUserWithSameUsername = {
+          email: 'test_user_4@example.com',
+          username: 'test_user_3',
+          password: 'password123'
+        };
+
+        const response = await request(app)
+          .post('/api/users/register')
+          .send(newUserWithSameUsername)
+          .expect(409);
+
+        expect(response.body).toHaveProperty('error', 'Username already exists');
+      });
 });
