@@ -7,11 +7,10 @@ export const registerUser = async (req: Request, res: Response) => {
         const user = await createUser(email, username, password);
         res.status(201).json(user);
     } catch (error) {
-        // NOTE: error of 'unknown' type before instanceof was implemented
         if (error instanceof Error) {
             res.status(400).json({ error: error.message });
         } else {
-            res.status(500).json({ error: 'An unknown error occurred' });
+            res.status(400).json({ error: 'An unexpected error occurred' });
         }
-    }
+      }
 };
