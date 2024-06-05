@@ -27,3 +27,10 @@ export const createUser = async (email: string, username: string, password: stri
     return { ...user, access_token: token };
 };
 
+export const getUserByEmail = async (email: string) => {
+    return userModel.findUnique({
+        where: {
+            email,
+        },
+    });
+};
