@@ -1,0 +1,343 @@
+openapi: '3.0.2'
+info:
+  title: Althea API
+  version: '1.0'
+  description: Althea is a portfolio project focused on creating a centralized platform for streamers and content creators.
+  license:
+    name: GNU GPL v3
+    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+servers:
+  - url: https://althea.astroxios.com/api
+    description: Main (production) server
+tags:
+  - name: Authentication
+    description: Operations related to user authentication, including login, logout, and token refresh.
+  - name: Users
+    description: Operations related to user management, including creating, retrieving, updating, and deleting user profiles.
+  - name: Widgets
+    description: Operations related to widget management, including creating, retrieving, updating, and deleting widgets.
+paths:
+  /auth/login:
+    post:
+      operationId: loginUser
+      summary: Login user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        '400':
+          description: Invalid request
+        '401':
+          description: Unauthorized access
+  /auth/logout:
+    post:
+      operationId: logoutUser
+      summary: Logout user
+      tags:
+        - Authentication
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LogoutRequest'
+      responses:
+        '204':
+          description: Successful operation
+        '401':
+          description: Invalid credentials
+  /auth/refresh:
+    post:
+      operationId: refreshAccessToken
+      summary: Refresh access token
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /users/register:
+    post:
+      operationId: registerUser
+      summary: Register a new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterRequest"
+      responses:
+        '201':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthResponse"
+        '400':
+          description: Invalid request
+        '409':
+          description: User already exists
+  /users/{user.id}:
+    get:
+      operationId: getUser
+      summary: Retrieve a user
+      security:
+        - bearerAuth: []
+      tags:
+        - Users
+      parameters:
+        - in: path
+          name: user.id
+          required: true
+          description: The ID of the user to retrieve
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        '404':
+          description: User not found
+    patch:
+      operationId: updateUser
+      summary: Update a user
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user.id
+          required: true
+          description: The ID of the user to update
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Username already exists
+        '404':
+          description: User not found
+    delete:
+      operationId: deleteUser
+      summary: Delete a user
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user.id
+          required: true
+          description: The ID of the user to delete
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Successful operation
+        '404':
+          description: User not found
+  /users:
+    get:
+      operationId: getUsers
+      summary: Retrieve multiple users
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: ids
+          required: true
+          description: The IDs of the users to retrieve, separated by commas (limit 100)
+          schema:
+            type: array
+            items:
+              type: integer
+            format: csv
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '404':
+          description: Users not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - email
+        - password
+      properties:
+        username:
+          type: string
+          format: username
+          minLength: 3
+          maxLength: 20
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 64
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          maxLength: 320
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 64
+    RefreshRequest:
+      type: object
+      properties:
+        refreshToken:
+          type: string
+          description: The refresh token to be used for obtaining a new access token
+    AuthResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+    LogoutRequest:
+      type: object
+      properties:
+        access_token:
+          type: string
+          description: The access token to be revoked during logout
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        username:
+          type: string
+          format: username
+        email:
+          type: string
+          format: email
+        nickname:
+          type: string
+        status:
+          type: string
+        avatar:
+          type: string
+        verified:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    Widget:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        title:
+          type: string
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        isActive:
+          type: boolean
+    UpdateUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          format: username
+          minLength: 3
+          maxLength: 20
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 64
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Error message
