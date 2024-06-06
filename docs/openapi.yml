@@ -40,27 +40,6 @@ paths:
           description: Invalid request
         '401':
           description: Unauthorized access
-  /auth/logout:
-    post:
-      operationId: logoutUser
-      summary: Logout user
-      tags:
-        - Authentication
-      security:
-        - bearerAuth: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/LogoutRequest'
-      responses:
-        '204':
-          description: Successfully logged out
-        '400':
-          description: No access token provided
-        '500':
-          description: An unexpected error occurred while logging out
   /auth/refresh:
     post:
       operationId: refreshAccessToken
