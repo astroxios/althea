@@ -42,3 +42,13 @@ export const getUserById = async (id: number) => {
         },
     });
 };
+
+export const updateUser = async (id: number, data: any) => {
+    if (data.password) {
+        data.password = await bcrypt.hash(data.password, 10);
+    }
+    return userModel.update({
+        where: { id },
+        data,
+    });
+};

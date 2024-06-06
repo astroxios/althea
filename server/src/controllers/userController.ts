@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createUser, getUserById } from '../services/userService';
+import { createUser, getUserById, updateUser } from '../services/userService';
 
 export const registerUser = async (req: Request, res: Response) => {
     const { email, username, password } = req.body;
@@ -37,5 +37,20 @@ export const getUser = async (req: Request, res: Response) => {
         res.status(200).json(allowed_response);
     } catch (error) {
         res.status(500).json({ error: 'Error retrieving user' });
+    }
+};
+
+export const updateUserDetails = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const data = req.body;
+    try {
+        const user = await updateUser(Number(id), data);
+        res.status(200).json(user);
+    } catch (error) {
+        if (error instanceof Error) {
+            res.status(400).json({ error: error.message });
+        } else {
+            res.status(400).json({ error: 'An unexpected error occurred' });
+        }
     }
 };
