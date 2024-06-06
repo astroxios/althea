@@ -26,7 +26,15 @@ export const getUser = async (req: Request, res: Response) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-        res.status(200).json(user);
+
+        // Create a response that excludes sensitive properties
+        const allowed_response = {
+            id: user.id,
+            username: user.username
+            // Add additional properties (as the object expands)
+        };
+
+        res.status(200).json(allowed_response);
     } catch (error) {
         res.status(500).json({ error: 'Error retrieving user' });
     }
