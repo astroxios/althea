@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createUser, getUserById, updateUser } from '../services/userService';
+import { createUser, getUserById, updateUser, deleteUser } from '../services/userService';
 import { filterProperties, redactSensitiveProperties } from '../utils/filterProperties';
 
 export const registerUser = async (req: Request, res: Response) => {
@@ -79,5 +79,15 @@ export const patchUserDetails = async (req: Request, res: Response) => {
         } else {
             res.status(500).json({ error: 'Internal Server Error' });
         }
+    }
+};
+
+export const removeUser = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        await deleteUser(Number(id));
+        res.status(204).send();
+    } catch (error) {
+        res.status(404).json({ error: 'User not found' });
     }
 };
