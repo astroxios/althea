@@ -1,12 +1,22 @@
 import { Request, Response } from 'express';
 import { createUser, getUserById, updateUser } from '../services/userService';
+import { filterProperties, redactSensitiveProperties } from '../utils/filterProperties';
 
 export const registerUser = async (req: Request, res: Response) => {
     const { email, username, password } = req.body;
-
     try {
         const user = await createUser(email, username, password);
-        res.status(201).json(user);
+        res.status(201).json({
+            message: 'User registration successful',
+            data: [
+                {
+                    id: user.id,
+                    email: user.email,
+                    username: user.username,
+                    access_token: user.access_token
+                }
+            ]
+        })
     } catch (error) {
         if (error instanceof Error) {
             if (error.message === 'Email already exists' || error.message === 'Username already exists') {
@@ -14,7 +24,7 @@ export const registerUser = async (req: Request, res: Response) => {
             }
             res.status(400).json({ error: error.message });
         } else {
-            res.status(400).json({ error: 'An unexpected error occurred' });
+            res.status(500).json({ error: 'Internal Server Error' });
         }
       }
 };
@@ -22,35 +32,52 @@ export const registerUser = async (req: Request, res: Response) => {
 export const getUser = async (req: Request, res: Response) => {
     const { id } = req.params;
     try {
+
         const user = await getUserById(Number(id));
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
 
-        // Create a response that excludes sensitive properties
-        const allowed_response = {
-            id: user.id,
-            username: user.username
-            // Add additional properties (as the object expands)
-        };
+        // Exclude specific properties from the response
+        const filteredResponse = filterProperties(user, [
+            'email',
+            'password',
+            'createdAt',
+            'updatedAt'
+        ]);
 
-        res.status(200).json(allowed_response);
+        res.status(200).json({
+            message: 'User retrieval successful',
+            data: [filteredResponse]
+        });
+
     } catch (error) {
-        res.status(500).json({ error: 'Error retrieving user' });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
-export const updateUserDetails = async (req: Request, res: Response) => {
+export const patchUserDetails = async (req: Request, res: Response) => {
     const { id } = req.params;
     const data = req.body;
     try {
         const user = await updateUser(Number(id), data);
-        res.status(200).json(user);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Exclude sensitive properties from the response
+        const redactedResponse = redactSensitiveProperties(user, ['password']);
+
+        res.status(200).json({
+            message: 'User update successful',
+            data: [redactedResponse]
+        });
+
     } catch (error) {
         if (error instanceof Error) {
             res.status(400).json({ error: error.message });
         } else {
-            res.status(400).json({ error: 'An unexpected error occurred' });
+            res.status(500).json({ error: 'Internal Server Error' });
         }
     }
 };

@@ -34,7 +34,7 @@ describe('POST /api/auth/login', () => {
       })
       .expect(200);
 
-    expect(response.body).toHaveProperty('access_token');
+    expect(response.body.data[0]).toHaveProperty('access_token');
   });
 
   it('should return 401 for incorrect email', async () => {

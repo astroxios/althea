@@ -26,9 +26,9 @@ describe('POST /api/users/register', () => {
             .send(newUser)
             .expect(201);
 
-        expect(response.body).toHaveProperty('id');
-        expect(response.body.username).toBe(newUser.username);
-        expect(response.body).toHaveProperty('access_token');
+        expect(response.body.data[0]).toHaveProperty('id');
+        expect(response.body.data[0].username).toBe(newUser.username);
+        expect(response.body.data[0]).toHaveProperty('access_token');
     });
 
     it('should return 400 if the request body is invalid', async () => {

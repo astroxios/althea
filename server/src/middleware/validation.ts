@@ -15,3 +15,19 @@ export const registerValidationRules = (): ValidationChain[] => {
             .withMessage('Password must be between 8 and 64 characters long'),
     ];
 };
+
+export const patchValidationRules = (): ValidationChain[] => {
+    return [
+        body('email').optional()
+            .isEmail()
+            .withMessage('Email must be valid'),
+        body('username').optional()
+            .isString()
+            .isLength({ min:3, max: 20 })
+            .withMessage('Username must be between 3 and 20 characters long'),
+        body('password').optional()
+            .isString()
+            .isLength({ min: 8, max: 65 })
+            .withMessage('Password must be between 8 and 64 characters long'),
+    ];
+};
