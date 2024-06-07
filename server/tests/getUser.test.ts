@@ -5,7 +5,7 @@ import { createUser } from '../src/services/userService';
 
 const prisma = new PrismaClient();
 
-describe('GET /users/:id', () => {
+describe('GET /api/users/:id', () => {
     let userId: number;
     let token: string;
 
@@ -14,9 +14,6 @@ describe('GET /users/:id', () => {
         const user = await createUser('test@example.com', 'testuser', 'password123');
         userId = user.id;
         token = user.access_token;
-
-        console.log('Created user:', user);
-        console.log('Generated token:', token);
     });
 
     afterAll(async () => {
@@ -25,10 +22,8 @@ describe('GET /users/:id', () => {
 
     it('should retrieve user successfully', async () => {
         const response = await request(app)
-            .get(`/users/${userId}`)
+            .get(`/api/users/${userId}`)
             .set('Authorization', `Bearer ${token}`);
-
-        console.log('Response:', response.body);
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('User retrieval successful');
@@ -39,7 +34,7 @@ describe('GET /users/:id', () => {
 
     it('should return 404 if user not found', async () => {
         const response = await request(app)
-            .get('/users/9999')
+            .get('/api/users/9999')
             .set('Authorization', `Bearer ${token}`);
 
         console.log('Response for 404:', response.body);
