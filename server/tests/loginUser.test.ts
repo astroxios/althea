@@ -7,18 +7,19 @@ const prisma = new PrismaClient();
 
 describe('POST /api/auth/login', () => {
   beforeAll(async () => {
-    // Clear existing users
+
     await prisma.user.deleteMany();
 
-    // Create a test user
+    // Register a test user
     const password = await bcrypt.hash('password123', 10);
     await prisma.user.create({
       data: {
-        email: 'test_user@example.com',
-        username: 'test_user',
+        email: 'login_user_1@example.com',
+        username: 'login_user_1',
         password,
       },
     });
+
   });
 
   afterAll(async () => {
@@ -29,7 +30,7 @@ describe('POST /api/auth/login', () => {
     const response = await request(app)
       .post('/api/auth/login')
       .send({
-        email: 'test_user@example.com',
+        email: 'login_user_1@example.com',
         password: 'password123',
       })
       .expect(200);
@@ -53,7 +54,7 @@ describe('POST /api/auth/login', () => {
     const response = await request(app)
       .post('/api/auth/login')
       .send({
-        email: 'test_user@example.com',
+        email: 'login_user_1@example.com',
         password: 'wrongpassword',
       })
       .expect(401);

@@ -16,8 +16,8 @@ describe('POST /api/users/register', () => {
 
     it('should register a new user', async () => {
         const newUser = {
-            email: 'test_user_1@example.com',
-            username: 'test_user_1',
+            email: 'register_user_1@example.com',
+            username: 'register_user_1',
             password: 'password123'
         };
 
@@ -55,8 +55,8 @@ describe('POST /api/users/register', () => {
 
     it('should return 409 if the email already exists', async () => {
         const existingUser = {
-          email: 'test_user_2@example.com',
-          username: 'test_user_2',
+          email: 'register_user_2@example.com',
+          username: 'register_user_2',
           password: 'password123'
         };
 
@@ -65,8 +65,8 @@ describe('POST /api/users/register', () => {
 
         // Attempt to register another user with the same email
         const newUserWithSameEmail = {
-          email: 'test_user_2@example.com',
-          username: 'test_user_3',
+          email: 'register_user_2@example.com',
+          username: 'random_username',
           password: 'password123'
         };
 
@@ -80,8 +80,8 @@ describe('POST /api/users/register', () => {
 
     it('should return 409 if the username already exists', async () => {
         const existingUser = {
-          email: 'test_user_3@example.com',
-          username: 'test_user_3',
+          email: 'register_user_3@example.com',
+          username: 'register_user_3',
           password: 'password123'
         };
 
@@ -90,8 +90,8 @@ describe('POST /api/users/register', () => {
 
         // Attempt to register another user with the same username
         const newUserWithSameUsername = {
-          email: 'test_user_4@example.com',
-          username: 'test_user_3',
+          email: 'random_email@example.com',
+          username: 'register_user_3',
           password: 'password123'
         };
 
