@@ -42,8 +42,6 @@ export const getUser = async (req: Request, res: Response) => {
         const filteredResponse = filterProperties(user, [
             'email',
             'password',
-            'createdAt',
-            'updatedAt'
         ]);
         res.status(200).json({
             message: 'User retrieval successful',
