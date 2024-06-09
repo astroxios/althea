@@ -1,40 +1,26 @@
-import Redis from 'ioredis';
 import { Request, Response, NextFunction } from 'express';
-
-const redis = new Redis({
-    host: process.env.REDIS_HOST,
-    port: parseInt(process.env.REDIS_PORT || '6379'),
-    password: process.env.REDIS_PASSWORD,
-});
+import redisClient from '../redisClient';
 
 export const cacheMiddleware = async (req: Request, res: Response, next: NextFunction) => {
-    const key = req.originalUrl;
+  const { id } = req.params;
 
-    try {
-        const cacheResponse = await redis.get(key);
+  try {
+    const cachedData = await redisClient.get(id);
 
-        if (cacheResponse) {
-            return res.json(JSON.parse(cacheResponse));
-        } else {
-            res.sendResponse = res.json.bind(res);
-            (res as any).json = async (body: any) => {
-                // Set cache expiration for 1 hour
-                await redis.set(key, JSON.stringify(body), 'EX', 3600);
-                (res as any).sendResponse(body);
-            }
-            next();
-        }
-    } catch (e) {
-        console.error(e);
-        next();
+    if (cachedData) {
+      return res.json(JSON.parse(cachedData));
     }
+
+    const originalJson = res.json.bind(res);
+
+    res.json = (body: any) => {
+      redisClient.setex(id, 3600, JSON.stringify(body)); // Cache for 1 hour
+      return originalJson(body);
+    };
+
+    next();
+  } catch (error) {
+    console.error('Redis error:', error);
+    next();
+  }
 };
-
-// Extend Request interface to include sendResponse property
-declare global {
-    namespace Express {
-      export interface Response {
-        sendResponse?: any;
-      }
-    }
-}
