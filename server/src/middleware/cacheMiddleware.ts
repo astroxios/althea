@@ -13,7 +13,7 @@ export const cacheMiddleware = async (req: Request, res: Response, next: NextFun
         const cachedData = await redisClient.get(id);
 
         if (cachedData) {
-            const { data, etag } = JSON.parse(cachedData);
+            const { response, etag } = JSON.parse(cachedData);
             const incomingETag = req.headers['if-none-match'];
 
             if (etag === incomingETag) {
@@ -21,16 +21,17 @@ export const cacheMiddleware = async (req: Request, res: Response, next: NextFun
             }
 
             res.setHeader('ETag', etag);
-            return res.json(data);
+            return res.json(response);
         }
 
         const originalJson = res.json.bind(res);
 
         res.json = (body: any) => {
             const etag = generateETag(body);
+            const cachedResponse = { response: body, etag };
 
             // Cache for 1 hour
-            redisClient.setex(id, 3600, JSON.stringify({ data: body, etag }));
+            redisClient.setex(id, 3600, JSON.stringify(cachedResponse));
 
             res.setHeader('ETag', etag);
             return originalJson(body);
