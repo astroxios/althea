@@ -64,17 +64,25 @@ export const patchUserDetails = async (req: Request, res: Response) => {
         const updated_user = await updateUser(Number(id), data);
 
         // Exclude sensitive properties from the response
-        const redactedResponse = redactSensitiveProperties(updated_user, ['password']);
-        const etag = generateETag(redactedResponse);
+        const filteredResponse = filterProperties(updated_user, [
+            'email',
+            'password'
+        ])
+        const etag = generateETag(filteredResponse);
 
         // Cache the updated user data (set for 1 hour)
-        const cachedResponse = { response: redactedResponse, etag };
+        const cachedResponse = {
+            response: {
+                data: [filteredResponse]
+            },
+            etag
+        };
         redisClient.setex(id, 3600, JSON.stringify(cachedResponse));
 
         res.setHeader('ETag', etag);
         res.status(200).json({
             message: 'User update successful',
-            data: [redactedResponse]
+            data: [filteredResponse]
         });
 
     } catch (error) {
