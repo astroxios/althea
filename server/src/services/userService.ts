@@ -1,6 +1,7 @@
 import userModel from "../models/userModel";
 import bcrypt from 'bcryptjs';
 import { generateToken } from '../middleware/auth';
+import redisClient from "../redisClient";
 
 export const createUser = async (email: string, username: string, password: string) => {
     // Check if the email or username already exists
@@ -47,10 +48,15 @@ export const updateUser = async (id: number, data: any) => {
     if (data.password) {
         data.password = await bcrypt.hash(data.password, 10);
     }
-    return userModel.update({
+    const updatedUser = await userModel.update({
         where: { id },
         data,
     });
+
+    // Clear the old cache
+    await redisClient.del(id.toString());
+
+    return updatedUser;
 };
 
 export const deleteUser = async (id: number) => {

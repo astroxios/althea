@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import redisClient from '../redisClient';
 import crypto from 'crypto';
 
-const generateETag = (data: any): string => {
+export const generateETag = (data: any): string => {
     return crypto.createHash('md5').update(JSON.stringify(data)).digest('hex');
 };
 
