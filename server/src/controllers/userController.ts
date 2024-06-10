@@ -13,7 +13,6 @@ export const registerUser = async (req: Request, res: Response) => {
             data: [
                 {
                     id: user.id,
-                    email: user.email,
                     username: user.username,
                     access_token: user.access_token
                 }
