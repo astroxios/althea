@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 :root {
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -16,9 +22,10 @@ body {
   margin: 0;
   padding: 0;
   border: 0;
-  background-color: #232123;
-  /* font-family: 'Work Sans', sans-serif;
+  background-color: white;
+  font-family: 'Roboto', sans-serif;
   font-weight: 400;
-  font-size: 20px; */
-  overflow-x: hidden; 
+  font-size: 16px;
+  font-style: normal;
+  overflow-x: hidden;
 }
