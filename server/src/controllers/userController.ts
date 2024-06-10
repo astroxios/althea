@@ -1,34 +1,8 @@
 import { Request, Response } from 'express';
-import { createUser, getUserById, updateUser, deleteUser, getUsersByIds } from '../services/userService';
-import { filterProperties, redactSensitiveProperties } from '../utils/filterProperties';
+import { getUserById, updateUser, deleteUser, getUsersByIds } from '../services/userService';
+import { filterProperties } from '../utils/filterProperties';
 import { generateETag } from '../middleware/cacheMiddleware';
 import redisClient from '../redisClient';
-
-export const registerUser = async (req: Request, res: Response) => {
-    const { email, username, password } = req.body;
-    try {
-        const user = await createUser(email, username, password);
-        res.status(201).json({
-            message: 'User registration successful',
-            data: [
-                {
-                    id: user.id,
-                    username: user.username,
-                    access_token: user.access_token
-                }
-            ]
-        })
-    } catch (error) {
-        if (error instanceof Error) {
-            if (error.message === 'Email already exists' || error.message === 'Username already exists') {
-                return res.status(409).json({ error: error.message });
-            }
-            res.status(400).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'Internal Server Error' });
-        }
-      }
-};
 
 export const getUser = async (req: Request, res: Response) => {
     const { id } = req.params;

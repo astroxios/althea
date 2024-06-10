@@ -20,7 +20,7 @@ describe('PATCH /api/users/:id', () => {
         };
 
         const response = await request(app)
-            .post('/api/users/register')
+            .post('/api/auth/register')
             .send(user)
             .expect(201);
 

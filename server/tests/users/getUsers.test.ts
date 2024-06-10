@@ -30,12 +30,12 @@ describe('GET /api/users', () => {
         }
 
         const response1 = await request(app)
-            .post('/api/users/register')
+            .post('/api/auth/register')
             .send(user1)
             .expect(201);
 
         const response2 = await request(app)
-            .post('/api/users/register')
+            .post('/api/auth/register')
             .send(user2)
             .expect(201)
 
@@ -60,7 +60,7 @@ describe('GET /api/users', () => {
             .set('Authorization', `Bearer ${token1}`);
 
         expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Parameter "ids" is required');
+        expect(response.body.error).toBe("Parameter 'ids' are required");
     });
 
     it('should return 400 if "ids" parameter is invalid', async () => {
@@ -70,7 +70,7 @@ describe('GET /api/users', () => {
             .set('Authorization', `Bearer ${token1}`);
 
         expect(response.status).toBe(400);
-        expect(response.body.error).toBe('Invalid "ids" parameter. Must be a comma-separated list of numbers.');
+        expect(response.body.error).toBe("Invalid 'ids' parameter. Must be a comma-separated list of numbers.");
     });
 
     it('should return 404 if no users are found', async () => {

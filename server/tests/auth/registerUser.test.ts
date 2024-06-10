@@ -5,7 +5,7 @@ import redisClient from '../../src/redisClient';
 
 const prisma = new PrismaClient();
 
-describe('POST /api/users/register', () => {
+describe('POST /api/auth/register', () => {
 
   beforeAll(async () => {
     await prisma.user.deleteMany();
@@ -27,7 +27,7 @@ describe('POST /api/users/register', () => {
     };
 
     const response = await request(app)
-        .post('/api/users/register')
+        .post('/api/auth/register')
         .send(newUser)
         .expect(201);
 
@@ -44,7 +44,7 @@ describe('POST /api/users/register', () => {
     };
 
     const response = await request(app)
-        .post('/api/users/register')
+        .post('/api/auth/register')
         .send(invalidUser)
         .expect(400);
 
@@ -66,7 +66,7 @@ describe('POST /api/users/register', () => {
     };
 
     // Register the user first
-    await request(app).post('/api/users/register').send(existingUser);
+    await request(app).post('/api/auth/register').send(existingUser);
 
     // Attempt to register another user with the same email
     const newUserWithSameEmail = {
@@ -76,7 +76,7 @@ describe('POST /api/users/register', () => {
     };
 
     const response = await request(app)
-      .post('/api/users/register')
+      .post('/api/auth/register')
       .send(newUserWithSameEmail)
       .expect(409);
 
@@ -91,7 +91,7 @@ describe('POST /api/users/register', () => {
     };
 
     // Register the user first
-    await request(app).post('/api/users/register').send(existingUser);
+    await request(app).post('/api/auth/register').send(existingUser);
 
     // Attempt to register another user with the same username
     const newUserWithSameUsername = {
@@ -101,7 +101,7 @@ describe('POST /api/users/register', () => {
     };
 
     const response = await request(app)
-      .post('/api/users/register')
+      .post('/api/auth/register')
       .send(newUserWithSameUsername)
       .expect(409);
 

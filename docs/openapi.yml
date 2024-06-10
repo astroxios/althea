@@ -11,49 +11,18 @@ servers:
     description: Main (production) server
 tags:
   - name: Authentication
-    description: Operations related to user authentication, including login, logout, and token refresh.
+    description: Operations related to user authentication, including registration, login, logout, and token refresh.
   - name: Users
     description: Operations related to user management, including creating, retrieving, updating, and deleting user profiles.
   - name: Widgets
     description: Operations related to widget management, including creating, retrieving, updating, and deleting widgets.
 paths:
-  /auth/login:
-    post:
-      operationId: loginUser
-      summary: Login user
-      tags:
-        - Authentication
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginResponse"
-        '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/500 Internal Server Error"
   /users/register:
     post:
       operationId: registerUser
       summary: Register a new user
       tags:
-        - Users
+        - Authentication
       requestBody:
         required: true
         content:
@@ -92,6 +61,37 @@ paths:
                   value:
                     error:
                       Username already exists
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500 Internal Server Error"
+  /auth/login:
+    post:
+      operationId: loginUser
+      summary: Login user
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         '500':
           description: Internal Server Error
           content:
