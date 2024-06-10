@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
-import { cacheMiddleware } from '../src/middleware/cacheMiddleware';
-import redisClient from '../src/redisClient';
+import { cacheMiddleware } from '../../src/middleware/cacheMiddleware';
+import redisClient from '../../src/redisClient';
 import crypto from 'crypto';
 
-jest.mock('../src/redisClient', () => ({
+jest.mock('../../src/redisClient', () => ({
   get: jest.fn(),
   setex: jest.fn(),
 }));

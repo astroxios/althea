@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
-import app from '../src/app';
+import app from '../../src/app';
 import bcrypt from 'bcryptjs';
-import redisClient from '../src/redisClient';
+import redisClient from '../../src/redisClient';
 
 const prisma = new PrismaClient();
 

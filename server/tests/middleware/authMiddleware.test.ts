@@ -1,7 +1,6 @@
 import request from 'supertest';
-import mockApp from './mockApp';
-import { generateToken } from '../src/utils/generateToken';
-import redisClient from '../src/redisClient';
+import mockApp from '../mockApp';
+import { generateToken } from '../../src/utils/generateToken';
 
 describe('authenticateToken Middleware', () => {
     let access_token: string;

@@ -1,5 +1,5 @@
 import request from 'supertest';
-import mockApp from './mockApp';
+import mockApp from '../mockApp';
 
 describe('Validation Middleware', () => {
     describe('POST /register', () => {

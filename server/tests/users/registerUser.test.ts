@@ -1,7 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
-import app from '../src/app';
-import redisClient from '../src/redisClient';
+import app from '../../src/app';
+import redisClient from '../../src/redisClient';
 
 const prisma = new PrismaClient();
 
