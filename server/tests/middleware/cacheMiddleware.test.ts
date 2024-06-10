@@ -41,7 +41,7 @@ describe('cacheMiddleware', () => {
 
     await cacheMiddleware(req as Request, res as Response, next);
 
-    expect(redisClient.get).toHaveBeenCalledWith('123');
+    expect(redisClient.get).toHaveBeenCalledWith('user:123');
     expect(res.sendStatus).toHaveBeenCalledWith(304);
     expect(res.json).not.toHaveBeenCalled();
   });
@@ -54,7 +54,7 @@ describe('cacheMiddleware', () => {
 
     await cacheMiddleware(req as Request, res as Response, next);
 
-    expect(redisClient.get).toHaveBeenCalledWith('123');
+    expect(redisClient.get).toHaveBeenCalledWith('user:123');
     expect(res.setHeader).toHaveBeenCalledWith('ETag', etag);
     expect(res.json).toHaveBeenCalledWith(data);
     expect(next).not.toHaveBeenCalled();
@@ -65,7 +65,7 @@ describe('cacheMiddleware', () => {
 
     await cacheMiddleware(req as Request, res as Response, next);
 
-    expect(redisClient.get).toHaveBeenCalledWith('123');
+    expect(redisClient.get).toHaveBeenCalledWith('user:123');
     expect(next).toHaveBeenCalled();
   });
 
@@ -86,7 +86,7 @@ describe('cacheMiddleware', () => {
     const mockBody = { message: 'User retrieval successful', data: [{ id: 1, username: 'updated_user' }] };
     res.json(mockBody);
 
-    expect(redisClient.setex).toHaveBeenCalledWith('123', 3600, JSON.stringify({ response: mockBody, etag: generateETag(mockBody) }));
+    expect(redisClient.setex).toHaveBeenCalledWith('user:123', 3600, JSON.stringify({ response: mockBody, etag: generateETag(mockBody) }));
     expect(res.setHeader).toHaveBeenCalledWith('ETag', generateETag(mockBody));
   });
 });
