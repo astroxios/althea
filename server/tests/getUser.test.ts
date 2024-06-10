@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
 import app from '../src/app';
+import redisClient from '../src/redisClient';
 
 const prisma = new PrismaClient();
 
@@ -9,8 +10,8 @@ describe('GET /api/users/:id', () => {
     let token: string;
 
     beforeAll(async () => {
-
         await prisma.user.deleteMany();
+        await redisClient.flushall();
 
         // Register a new user
         const user = {
@@ -30,7 +31,10 @@ describe('GET /api/users/:id', () => {
     });
 
     afterAll(async () => {
+        await prisma.user.deleteMany();
+        await redisClient.flushall();
         await prisma.$disconnect();
+        redisClient.quit();
     });
 
     it('should retrieve user successfully', async () => {

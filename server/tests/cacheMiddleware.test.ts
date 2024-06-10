@@ -21,10 +21,16 @@ describe('cacheMiddleware', () => {
     req = { params: { id: '123' }, headers: {} };
     res = {
       json: jest.fn(),
-      status: jest.fn().mockReturnThis(),
+      sendStatus: jest.fn(),
       setHeader: jest.fn(),
     };
     next = jest.fn();
+  });
+
+  afterAll(() => {
+    if (typeof redisClient.quit === 'function') {
+      redisClient.quit();
+    }
   });
 
   it('should return cached data if exists and ETag matches', async () => {
@@ -36,7 +42,7 @@ describe('cacheMiddleware', () => {
     await cacheMiddleware(req as Request, res as Response, next);
 
     expect(redisClient.get).toHaveBeenCalledWith('123');
-    expect(res.status).toHaveBeenCalledWith(304);
+    expect(res.sendStatus).toHaveBeenCalledWith(304);
     expect(res.json).not.toHaveBeenCalled();
   });
 

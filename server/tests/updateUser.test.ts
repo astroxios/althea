@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
 import app from '../src/app';
+import redisClient from '../src/redisClient';
 
 const prisma = new PrismaClient();
 
@@ -11,6 +12,7 @@ describe('PATCH /api/users/:id', () => {
     beforeAll(async () => {
 
         await prisma.user.deleteMany();
+        await redisClient.flushall();
 
         // Register a new user
         const user = {
@@ -30,7 +32,10 @@ describe('PATCH /api/users/:id', () => {
     });
 
     afterAll(async () => {
+        await prisma.user.deleteMany();
+        await redisClient.flushall();
         await prisma.$disconnect();
+        redisClient.quit();
     });
 
     it('should update user successfully', async () => {
@@ -44,7 +49,7 @@ describe('PATCH /api/users/:id', () => {
         expect(response.body.data[0]).toHaveProperty('username', 'updated_user');
     });
 
-    it('should redact password in updated fields', async () => {
+    it('should not show password in updated fields', async () => {
         const response = await request(app)
         .patch(`/api/users/${userId}`)
         .set('Authorization', `Bearer ${token}`)
@@ -52,7 +57,7 @@ describe('PATCH /api/users/:id', () => {
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('User update successful');
-        expect(response.body.data[0]).toHaveProperty('password', 'REDACTED');
+        expect(response.body.data[0]).not.toHaveProperty('password');
     });
 
     it('should return 404 if user not found', async () => {

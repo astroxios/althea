@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import request from 'supertest';
 import app from '../src/app';
 import bcrypt from 'bcryptjs';
+import redisClient from '../src/redisClient';
 
 const prisma = new PrismaClient();
 
@@ -9,6 +10,7 @@ describe('POST /api/auth/login', () => {
   beforeAll(async () => {
 
     await prisma.user.deleteMany();
+    await redisClient.flushall();
 
     // Register a test user
     const password = await bcrypt.hash('password123', 10);
@@ -23,7 +25,10 @@ describe('POST /api/auth/login', () => {
   });
 
   afterAll(async () => {
+    await prisma.user.deleteMany();
+    await redisClient.flushall();
     await prisma.$disconnect();
+    redisClient.quit();
   });
 
   it('should login successfully and return an access token', async () => {

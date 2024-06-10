@@ -17,7 +17,7 @@ export const cacheMiddleware = async (req: Request, res: Response, next: NextFun
             const incomingETag = req.headers['if-none-match'];
 
             if (etag === incomingETag) {
-                return res.status(304).end(); // Not modified
+                return res.sendStatus(304); // Not modified
             }
 
             res.setHeader('ETag', etag);
