@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createUser, getUserById, updateUser, deleteUser } from '../services/userService';
+import { createUser, getUserById, updateUser, deleteUser, getUsersByIds } from '../services/userService';
 import { filterProperties, redactSensitiveProperties } from '../utils/filterProperties';
 import { generateETag } from '../middleware/cacheMiddleware';
 import redisClient from '../redisClient';
@@ -101,5 +101,32 @@ export const removeUser = async (req: Request, res: Response) => {
         res.status(204).send();
     } catch (error) {
         res.status(404).json({ error: 'User not found' });
+    }
+};
+
+export const getUsers = async (req: Request, res: Response) => {
+    try {
+        const idsParam = req.query.ids as string;
+        if (!idsParam) {
+            return res.status(400).json({ error: 'Parameter "ids" is required' });
+        }
+
+        const userIds = idsParam.split(',').map(id => parseInt(id.trim(), 10));
+        if (userIds.some(isNaN)) {
+            return res.status(400).json({ error: 'Invalid "ids" parameter. Must be a comma-separated list of numbers.' });
+        }
+
+        const users = await getUsersByIds(userIds);
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'No users found' });
+        }
+
+        const filteredUsers = users.map(user => filterProperties(user, ['password']));
+        res.status(200).json({
+            message: 'Users retrieval successful',
+            data: filteredUsers
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };

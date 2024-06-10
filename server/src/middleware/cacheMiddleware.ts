@@ -8,9 +8,10 @@ export const generateETag = (data: any): string => {
 
 export const cacheMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
+    const queryKey = id ? `user:${id}` : `users:${JSON.stringify(req.query)}`;
 
     try {
-        const cachedData = await redisClient.get(id);
+        const cachedData = await redisClient.get(queryKey);
 
         if (cachedData) {
             const { response, etag } = JSON.parse(cachedData);
@@ -31,7 +32,7 @@ export const cacheMiddleware = async (req: Request, res: Response, next: NextFun
             const cachedResponse = { response: body, etag };
 
             // Cache for 1 hour
-            redisClient.setex(id, 3600, JSON.stringify(cachedResponse));
+            redisClient.setex(queryKey, 3600, JSON.stringify(cachedResponse));
 
             res.setHeader('ETag', etag);
             return originalJson(body);

@@ -64,3 +64,13 @@ export const deleteUser = async (id: number) => {
         where: { id },
     });
 };
+
+export const getUsersByIds = async (ids: number[]) => {
+    return userModel.findMany({
+        where: {
+            id: {
+                in: ids
+            }
+        }
+    });
+};
