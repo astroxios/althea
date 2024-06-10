@@ -14,9 +14,12 @@
     "@types/react-router-dom": "^5.3.3",
     "@types/uuid": "^9.0.8",
     "bun": "^1.1.10",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.23.1"
+    "react-router-dom": "^6.23.1",
+    "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
