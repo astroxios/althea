@@ -28,7 +28,7 @@ describe('POST /api/auth/login', () => {
     await prisma.user.deleteMany();
     await redisClient.flushall();
     await prisma.$disconnect();
-    redisClient.quit();
+    await redisClient.quit();
   });
 
   it('should login successfully and return an access token', async () => {

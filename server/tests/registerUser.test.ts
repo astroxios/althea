@@ -16,7 +16,7 @@ describe('POST /api/users/register', () => {
     await prisma.user.deleteMany();
     await redisClient.flushall();
     await prisma.$disconnect();
-    redisClient.quit();
+    await redisClient.quit();
   });
 
   it('should register a new user', async () => {

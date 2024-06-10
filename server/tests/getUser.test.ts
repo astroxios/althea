@@ -34,7 +34,7 @@ describe('GET /api/users/:id', () => {
         await prisma.user.deleteMany();
         await redisClient.flushall();
         await prisma.$disconnect();
-        redisClient.quit();
+        await redisClient.quit();
     });
 
     it('should retrieve user successfully', async () => {

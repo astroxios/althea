@@ -10,23 +10,20 @@ describe('PATCH /api/users/:id', () => {
     let token: string;
 
     beforeAll(async () => {
-
         await prisma.user.deleteMany();
         await redisClient.flushall();
 
-        // Register a new user
         const user = {
             email: 'update_user_1@example.com',
             username: 'update_user_1',
             password: 'password123'
-        }
+        };
 
         const response = await request(app)
             .post('/api/users/register')
             .send(user)
-            .expect(201)
+            .expect(201);
 
-        // Store the user ID and access token
         userId = response.body.data[0].id;
         token = response.body.data[0].access_token;
     });
@@ -35,25 +32,25 @@ describe('PATCH /api/users/:id', () => {
         await prisma.user.deleteMany();
         await redisClient.flushall();
         await prisma.$disconnect();
-        redisClient.quit();
+        await redisClient.quit();
     });
 
     it('should update user successfully', async () => {
         const response = await request(app)
-        .patch(`/api/users/${userId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ username: 'updated_user' });
+            .patch(`/api/users/${userId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'updated_user' });
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('User update successful');
         expect(response.body.data[0]).toHaveProperty('username', 'updated_user');
     });
 
-    it('should not show password in updated fields', async () => {
+    it('should not show updated password in the response', async () => {
         const response = await request(app)
-        .patch(`/api/users/${userId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({ password: 'newpassword123' });
+            .patch(`/api/users/${userId}`)
+            .set('Authorization', `Bearer ${token}`)
+            .send({ password: 'newpassword123' });
 
         expect(response.status).toBe(200);
         expect(response.body.message).toBe('User update successful');
@@ -62,9 +59,9 @@ describe('PATCH /api/users/:id', () => {
 
     it('should return 404 if user not found', async () => {
         const response = await request(app)
-        .patch('/api/users/99999')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ username: 'updated_user' });
+            .patch('/api/users/99999')
+            .set('Authorization', `Bearer ${token}`)
+            .send({ username: 'updated_user' });
 
         expect(response.status).toBe(404);
         expect(response.body.error).toBe('User not found');
