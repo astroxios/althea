@@ -32,12 +32,3 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
         return res.status(401).json({ error: 'Unauthorized' });
     }
 };
-
-// Extend Request interface to include user property
-declare global {
-    namespace Express {
-        interface Request {
-            user?: any;
-        }
-    }
-}

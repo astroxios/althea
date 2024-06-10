@@ -1,6 +1,6 @@
 import { getUserByEmail } from './userService';
 import bcrypt from 'bcryptjs';
-import { generateToken } from '../middleware/auth';
+import { generateToken } from '../middleware/authMiddleware';
 
 export const loginUser = async (email: string, password: string) => {
     const user = await getUserByEmail(email);

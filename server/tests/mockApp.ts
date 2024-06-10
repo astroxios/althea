@@ -1,6 +1,6 @@
 import express from 'express';
-import { authenticateToken } from '../src/middleware/auth';
-import { registerValidationRules, patchValidationRules } from '../src/middleware/validation';
+import { authenticateToken } from '../src/middleware/authMiddleware';
+import { registerValidationRules, patchValidationRules } from '../src/middleware/validationMiddleware';
 import { handleValidationErrors } from '../src/middleware/handleValidationErrors';
 
 const mockApp = express();

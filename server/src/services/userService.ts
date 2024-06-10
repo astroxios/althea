@@ -1,6 +1,6 @@
 import userModel from "../models/userModel";
 import bcrypt from 'bcryptjs';
-import { generateToken } from '../middleware/auth';
+import { generateToken } from '../middleware/authMiddleware';
 import redisClient from "../redisClient";
 
 export const createUser = async (email: string, username: string, password: string) => {
