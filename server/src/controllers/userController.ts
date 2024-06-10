@@ -107,12 +107,12 @@ export const getUsers = async (req: Request, res: Response) => {
     try {
         const idsParam = req.query.ids as string;
         if (!idsParam) {
-            return res.status(400).json({ error: 'Parameter "ids" is required' });
+            return res.status(400).json({ error: "Parameter 'ids' are required" });
         }
 
         const userIds = idsParam.split(',').map(id => parseInt(id.trim(), 10));
         if (userIds.some(isNaN)) {
-            return res.status(400).json({ error: 'Invalid "ids" parameter. Must be a comma-separated list of numbers.' });
+            return res.status(400).json({ error: "Invalid 'ids' parameter. Must be a comma-separated list of numbers." });
         }
 
         const users = await getUsersByIds(userIds);

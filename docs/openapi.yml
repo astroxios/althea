@@ -31,46 +31,23 @@ paths:
               $ref: "#/components/schemas/LoginRequest"
       responses:
         '200':
-          description: Successful operation
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthResponse"
-        '400':
-          description: Invalid request
-        '401':
-          description: Unauthorized access
-  /auth/refresh:
-    post:
-      operationId: refreshAccessToken
-      summary: Refresh access token
-      tags:
-        - Authentication
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/RefreshRequest'
-      responses:
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AuthResponse'
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/LoginResponse"
         '401':
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Error'
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500 Internal Server Error"
   /users/register:
     post:
       operationId: registerUser
@@ -85,15 +62,42 @@ paths:
               $ref: "#/components/schemas/RegisterRequest"
       responses:
         '201':
-          description: Successful operation
+          description: Created
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthResponse"
+                $ref: "#/components/schemas/RegisterResponse"
         '400':
-          description: Invalid request
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
         '409':
-          description: User already exists
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: A human-readable message describing the error.
+              examples:
+                Email:
+                  value:
+                    error:
+                      Email already exists
+                Username:
+                  value:
+                    error:
+                      Username already exists
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500 Internal Server Error"
   /users/{user.id}:
     get:
       operationId: getUser
@@ -111,15 +115,35 @@ paths:
             type: integer
       responses:
         '200':
-          description: Successful response
+          description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User retrieval successful
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
         '404':
-          description: User not found
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
         '500':
-          description: Error retrieving user
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500 Internal Server Error"
     patch:
       operationId: updateUser
       summary: Update a user
@@ -142,15 +166,41 @@ paths:
               $ref: "#/components/schemas/UpdateUserRequest"
       responses:
         '200':
-          description: Successful operation
+          description: OK
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
-        '400':
-          description: Username already exists
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User update successful
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
         '404':
-          description: User not found
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500 Internal Server Error"
     delete:
       operationId: deleteUser
       summary: Delete a user
@@ -167,9 +217,17 @@ paths:
             type: integer
       responses:
         '204':
-          description: Successful operation
+          description: No Content
         '404':
-          description: User not found
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
   /users:
     get:
       operationId: getUsers
@@ -190,15 +248,52 @@ paths:
             format: csv
       responses:
         '200':
-          description: Successful operation
+          description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User retrieval successful
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                Parameter:
+                  value:
+                    error: Parameter 'ids' are required
+                Fields:
+                  value:
+                    error:
+                      Invalid 'ids' parameter. Must be a comma-separated list of numbers.
         '404':
-          description: Users not found
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: User not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500 Internal Server Error"
 components:
   securitySchemes:
     bearerAuth:
@@ -226,6 +321,28 @@ components:
           format: password
           minLength: 8
           maxLength: 64
+    RegisterResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: User registration successful
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+                example: 1
+              username:
+                type: string
+                format: username
+                example: username
+              access_token:
+                type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZTVAZXhhbXBsZS5jb20iLCJpYXQiOjE3MTgwNDM5MTgsImV4cCI6MTcxODA0NzUxOH0.qYTXIw6JtLQ8mFvO76KPYhOJLuMQz7yfGkuFqlI5IF4
     LoginRequest:
       type: object
       required:
@@ -241,17 +358,27 @@ components:
           format: password
           minLength: 8
           maxLength: 64
+          example: password123
     RefreshRequest:
       type: object
       properties:
         refreshToken:
           type: string
           description: The refresh token to be used for obtaining a new access token
-    AuthResponse:
+    LoginResponse:
       type: object
       properties:
-        access_token:
+        message:
           type: string
+          example: User login successful
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              access_token:
+                type: string
+                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZTVAZXhhbXBsZS5jb20iLCJpYXQiOjE3MTgwNDM5MTgsImV4cCI6MTcxODA0NzUxOH0.qYTXIw6JtLQ8mFvO76KPYhOJLuMQz7yfGkuFqlI5IF4
     LogoutRequest:
       type: object
       properties:
@@ -267,17 +394,6 @@ components:
         username:
           type: string
           format: username
-        email:
-          type: string
-          format: email
-        nickname:
-          type: string
-        status:
-          type: string
-        avatar:
-          type: string
-        verified:
-          type: boolean
         createdAt:
           type: string
           format: date-time
@@ -305,22 +421,31 @@ components:
     UpdateUserRequest:
       type: object
       properties:
+        email:
+          type: string
+          format: email
         username:
           type: string
           format: username
           minLength: 3
           maxLength: 20
-        email:
-          type: string
-          format: email
+          example: username
         password:
           type: string
           format: password
           minLength: 8
           maxLength: 64
+          example: password
     Error:
       type: object
       properties:
-        message:
+        error:
           type: string
-          description: Error message
+          description: A human-readable message describing the error.
+    500 Internal Server Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: A human-readable message describing the error.
+          example: Internal Server Error
