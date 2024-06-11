@@ -1,7 +1,8 @@
 import Redis from 'ioredis';
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const redisClient = new Redis({
     host: process.env.REDIS_HOST,

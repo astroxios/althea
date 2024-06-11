@@ -3,12 +3,23 @@ services:
   db:
     image: postgres
     environment:
-      POSTGRES_USER: Metro1102
-      POSTGRES_PASSWORD: vpCzk!gVZ2jz
-      POSTGRES_DB: althea
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
   cache:
     image: redis
+    command: redis-server --requirepass ${REDIS_PASSWORD}
     ports:
       - "6379:6379"
+  prisma-push:
+    image: node:16
+    volumes:
+      - ./server/prisma:/prisma
+    working_dir: /prisma
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+    command: sh -c "npm install prisma && npx prisma db push && rm -rf node_modules package.json package-lock.json"
+    depends_on:
+      - db
