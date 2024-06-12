@@ -14,4 +14,39 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Widget {
+  id        Int        @id @default(autoincrement())
+  type      WidgetType @relation(fields: [typeId], references: [id])
+  typeId    Int
+  name      String
+  is_active Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("widgets")
+}
+
+model WidgetType {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String
+  widgets     Widget[]
+
+  @@map("widget_types")
+}
+
+// Initial widget types
+enum WidgetTypeNames {
+  SCHEDULES
+  POLLS
+  SHOUTOUTS
+  FAN_ART
+  MERCHANDISE
+  CONTESTS
+  HIGHLIGHTS
+  RANKINGS
 }
