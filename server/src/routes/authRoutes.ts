@@ -5,7 +5,7 @@ import { handleValidationErrors } from '../middleware/handleValidationErrors';
 
 const router = Router();
 
-router.post('/register', registerValidationRules(), handleValidationErrors, register);
-router.post('/login', login);
+router.post('/auth/register', registerValidationRules(), handleValidationErrors, register);
+router.post('/auth/login', login);
 
 export default router;

@@ -7,9 +7,9 @@ import { cacheMiddleware } from '../middleware/cacheMiddleware';
 
 const router = Router();
 
-router.get('/', authenticate, cacheMiddleware, getUsers);
-router.get('/:id', authenticate, cacheMiddleware, getUser);
-router.patch('/:id', authenticate, patchValidationRules(), handleValidationErrors, patchUserDetails);
-router.delete('/:id', authenticate, removeUser);
+router.get('/users', authenticate, cacheMiddleware, getUsers);
+router.get('/users/:id', authenticate, cacheMiddleware, getUser);
+router.patch('/users/:id', authenticate, patchValidationRules(), handleValidationErrors, patchUserDetails);
+router.delete('/users/:id', authenticate, removeUser);
 
 export default router;
