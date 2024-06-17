@@ -14,15 +14,17 @@ model User {
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  Widget    Widget[]
 
   @@map("users")
 }
 
 model Widget {
   id        Int        @id @default(autoincrement())
+  user      User       @relation(fields: [userId], references: [id])
   type      WidgetType @relation(fields: [typeId], references: [id])
+  userId    Int
   typeId    Int
-  name      String
   is_active Boolean    @default(true)
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt

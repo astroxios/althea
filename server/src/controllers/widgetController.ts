@@ -3,7 +3,7 @@ import * as widgetService from '../services/widgetService';
 
 export const getWidgets = async (req: Request, res: Response) => {
     try {
-        const widgets = await widgetService.getWidgets();
+        const widgets = await widgetService.getWidgets(req.user.id);
         res.json(widgets);
     } catch (error) {
         res.status(500).json({ error: 'Failed to fetch widgets' });
@@ -11,10 +11,21 @@ export const getWidgets = async (req: Request, res: Response) => {
 };
 
 export const createWidget = async (req: Request, res: Response) => {
-    const { name, typeId } = req.body;
+    const user  = req.user;
+    const userId = user.id;
+    const { widget_type } = req.body;
     try {
-        const newWidget = await widgetService.createWidget(name, typeId);
-        res.status(201).json(newWidget);
+        const widget = await widgetService.createWidget(userId, widget_type);
+        res.status(201).json({
+            message: 'Widget creation successful',
+            data: [
+                {
+                    id: widget.id,
+                    widget_type: widget.typeName,
+                    createdAt: widget.createdAt
+                }
+            ]
+        });
     } catch(error) {
         res.status(500).json({ error: 'Failed to create widget' });
     }
