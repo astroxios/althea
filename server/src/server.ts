@@ -14,7 +14,7 @@ async function applyMigrations() {
     await execPromise('bunx prisma migrate deploy');
     console.log('Migrations applied successfuly.');
   } catch(error) {
-    console.error('Error applying migraitons:', error);
+    console.error('Error applying migrations:', error);
   }
 }
 
