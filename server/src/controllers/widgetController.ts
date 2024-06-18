@@ -1,6 +1,38 @@
 import { Request, Response } from 'express';
 import * as widgetService from '../services/widgetService';
 
+export const getWidget = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    try {
+        const widget = await widgetService.getWidgetById(Number(id));
+        if (!widget) {
+            return res.status(404).json({ error: 'Widget not found' });
+        }
+
+        const response = {
+            id: widget.id,
+            widget_type: widget.type,
+            is_active: widget.is_active,
+            createdAt: widget.createdAt,
+            updatedAt: widget.updatedAt,
+            includes: {
+                user: {
+                    id: widget.user.id,
+                    username: widget.user.username
+                }
+            }
+        };
+
+        res.status(200).json({
+            message: 'Widget retrieval successful',
+            data: [response]
+        })
+    } catch (error) {
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+
 export const getWidgets = async (req: Request, res: Response) => {
     // NOTE: getWidgets requires userId from auth_token or other source
     const userId = req.user.id
@@ -37,7 +69,8 @@ export const createWidget = async (req: Request, res: Response) => {
             data: [
                 {
                     id: widget.id,
-                    widget_type: widget.typeName,
+                    widget_type: widget.type,
+                    is_active: widget.is_active,
                     createdAt: widget.createdAt
                 }
             ]

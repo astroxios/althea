@@ -6,6 +6,20 @@ export const getWidgetById = async (id: number) => {
         where: {
             id,
         },
+        include: {
+            type: true,
+            user: true
+        },
+    });
+};
+
+export const getWidgetsByIds = async (ids: number[]) => {
+    return widgetModel.findMany({
+        where: {
+            id: {
+                in: ids
+            }
+        }
     });
 };
 
