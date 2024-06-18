@@ -294,6 +294,78 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/500 Internal Server Error"
+  /widgets:
+    get:
+      operationId: getWidgets
+      summary: Retrieve multiple widgets
+      description: Retrieves a list of widgets created by the currently authenticated user (requires JWT auth).
+      tags:
+        - Widgets
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Widget retrieval successful
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Widget"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Widgets not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500 Internal Server Error"
+    post:
+      operationId: createWidget
+      summary: Create a new widget
+      description: Creates a new widget for the currently authenticated user (requires JWT auth).
+      tags:
+        - Widgets
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWidgetRequest"
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Widget creation successful
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Widget"
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500 Internal Server Error"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -400,24 +472,6 @@ components:
         updatedAt:
           type: string
           format: date-time
-    Widget:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        title:
-          type: string
-        description:
-          type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-        isActive:
-          type: boolean
     UpdateUserRequest:
       type: object
       properties:
@@ -449,3 +503,21 @@ components:
           type: string
           description: A human-readable message describing the error.
           example: Internal Server Error
+    CreateWidgetRequest:
+      type: object
+      properties:
+        widget_type:
+          type: string
+          example: Stream Schedule
+    Widget:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        widget_type:
+          type: string
+          example: Stream Schedule
+        createdAt:
+          type: string
+          format: date-time

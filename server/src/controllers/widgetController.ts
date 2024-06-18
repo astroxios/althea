@@ -2,11 +2,27 @@ import { Request, Response } from 'express';
 import * as widgetService from '../services/widgetService';
 
 export const getWidgets = async (req: Request, res: Response) => {
+    // NOTE: getWidgets requires userId from auth_token or other source
+    const userId = req.user.id
     try {
-        const widgets = await widgetService.getWidgets(req.user.id);
-        res.json(widgets);
+        const widgets = await widgetService.getWidgetsByUserId(userId);
+
+        if (!widgets) {
+            return res.status(404).json({ error: 'Widgets not found'})
+        }
+
+        const formattedResponse = widgets.map(widget => ({
+            id: widget.id,
+            widget_type: widget.type.name,
+            createdAt: widget.createdAt,
+        }));
+
+        res.status(200).json({
+            message: 'Widgets retrieval successful',
+            data: [formattedResponse]
+        });
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch widgets' });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 

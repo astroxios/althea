@@ -1,7 +1,7 @@
 import widgetModel from "../models/widgetModel";
 import widgetTypeModel from "../models/widgetTypeModel";
 
-export const getWidgets = async (userId: number) => {
+export const getWidgetsByUserId = async (userId: number) => {
     return await widgetModel.findMany({
         where: { userId },
         include: { type: true },
@@ -9,7 +9,6 @@ export const getWidgets = async (userId: number) => {
 };
 
 export const createWidget = async (userId: number, widget_type: string) => {
-    // Find the widget type by name
     const widgetType = await widgetTypeModel.findUnique({
         where: { name: widget_type }
     });
