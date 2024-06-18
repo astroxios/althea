@@ -19,7 +19,11 @@ export const getWidgetsByIds = async (ids: number[]) => {
             id: {
                 in: ids
             }
-        }
+        },
+        include: {
+            type: true,
+            user: true
+        },
     });
 };
 

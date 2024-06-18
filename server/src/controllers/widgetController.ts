@@ -34,24 +34,39 @@ export const getWidget = async (req: Request, res: Response) => {
 
 
 export const getWidgets = async (req: Request, res: Response) => {
-    // NOTE: getWidgets requires userId from auth_token or other source
-    const userId = req.user.id
     try {
-        const widgets = await widgetService.getWidgetsByUserId(userId);
-
-        if (!widgets) {
-            return res.status(404).json({ error: 'Widgets not found'})
+        const idsParam = req.query.ids as string;
+        if (!idsParam) {
+            return res.status(400).json({ error: "Parameter 'ids' are required" });
         }
 
-        const formattedResponse = widgets.map(widget => ({
+        const widgetIds = idsParam.split(',').map(id => parseInt(id.trim(), 10));
+        if (widgetIds.some(isNaN)) {
+            return res.status(400).json({ error: "Invalid 'ids' parameter. Must be a comma-separated list of numbers." });
+        }
+
+        const widgets = await widgetService.getWidgetsByIds(widgetIds);
+        if (widgets.length === 0) {
+            return res.status(404).json({ error: 'No widgets found' });
+        }
+
+        const response = widgets.map(widget => ({
             id: widget.id,
-            widget_type: widget.type.name,
+            widget_type: widget.type,
+            is_active: widget.is_active,
             createdAt: widget.createdAt,
+            updatedAt: widget.updatedAt,
+            includes: {
+                user: {
+                    id: widget.user.id,
+                    username: widget.user.username
+                }
+            }
         }));
 
         res.status(200).json({
             message: 'Widgets retrieval successful',
-            data: [formattedResponse]
+            data: [response]
         });
     } catch (error) {
         res.status(500).json({ error: 'Internal Server Error' });
@@ -71,7 +86,13 @@ export const createWidget = async (req: Request, res: Response) => {
                     id: widget.id,
                     widget_type: widget.type,
                     is_active: widget.is_active,
-                    createdAt: widget.createdAt
+                    createdAt: widget.createdAt,
+                    includes: {
+                        user: {
+                            id: widget.user.id,
+                            username: widget.user.username
+                        }
+                    }
                 }
             ]
         });
