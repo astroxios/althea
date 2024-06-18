@@ -6,7 +6,7 @@ const router = Router();
 
 router.get('/widgets', authenticate, widgetController.getWidgets);
 router.post('/widgets', authenticate, widgetController.createWidget);
-router.put('/widgets/:id', authenticate, widgetController.updateWidget);
+router.patch('/widgets/:id', authenticate, widgetController.updateWidget);
 router.delete('/widgets/:id', authenticate, widgetController.deleteWidget);
 
 export default router;

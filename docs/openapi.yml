@@ -365,6 +365,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/500 Internal Server Error"
+    patch:
+      operationId: updateWidget
+      summary: Update a widget
+      description: Updates an existing widget for the currently authenticated user (requires JWT auth).
+      tags:
+        - Widgets
+      responses:
+        '200':
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    message:
+                      type: string
+                      example: Widget update successful
+                    data:
+                      type: array
+                      items:
+                        $ref: "#/components/schemas/UpdateWidgetResponse"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Widget not found
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/500 Internal Server Error"
 
 components:
   securitySchemes:
@@ -519,5 +556,20 @@ components:
           type: string
           example: Stream Schedule
         createdAt:
+          type: string
+          format: date-time
+    UpdateWidgetResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        widget_type:
+          type: string
+          example: Stream Schedule
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
           type: string
           format: date-time

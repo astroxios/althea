@@ -1,6 +1,14 @@
 import widgetModel from "../models/widgetModel";
 import widgetTypeModel from "../models/widgetTypeModel";
 
+export const getWidgetById = async (id: number) => {
+    return await widgetModel.findUnique({
+        where: {
+            id,
+        },
+    });
+};
+
 export const getWidgetsByUserId = async (userId: number) => {
     return await widgetModel.findMany({
         where: { userId },
@@ -39,6 +47,9 @@ export const updateWidget = async (id: number, isActive: boolean) => {
     return await widgetModel.update({
         where: { id },
         data: { is_active: isActive },
+        include: {
+            type: true,
+        }
     });
 };
 

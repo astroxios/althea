@@ -43,7 +43,7 @@ export const createWidget = async (req: Request, res: Response) => {
             ]
         });
     } catch(error) {
-        res.status(500).json({ error: 'Failed to create widget' });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
@@ -51,10 +51,26 @@ export const updateWidget = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { isActive } = req.body;
     try {
-        const updatedWidget = await widgetService.updateWidget(Number(id), isActive);
-        res.json(updatedWidget);
+        const widget = await widgetService.getWidgetById(Number(id));
+        if (!widget) {
+            return res.status(404).json({ error: 'Widget not found'});
+        }
+
+        const updated_Widget = await widgetService.updateWidget(Number(id), isActive);
+
+        res.status(200).json({
+            message: 'Widget update successful',
+            data: [
+                {
+                    id: updated_Widget.id,
+                    widget_type: updated_Widget.type.name,
+                    createdAt: updated_Widget.createdAt,
+                    updatedAt: updated_Widget.updatedAt
+                }
+            ]
+        });
     } catch(error) {
-        res.status(500).json({ error: 'Failed to update widget' });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
 
@@ -64,6 +80,6 @@ export const deleteWidget = async (req: Request, res: Response) => {
         await widgetService.deleteWidget(Number(id));
         res.status(204).send();
     } catch(error) {
-        res.status(500).json({ error: 'Failed to delete widget' });
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 };
