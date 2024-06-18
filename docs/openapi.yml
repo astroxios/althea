@@ -402,7 +402,34 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/500 Internal Server Error"
-
+    delete:
+      operationId: deleteWidget
+      summary: Delete a widget
+      description: Deletes a widget with the specified ID.
+      tags:
+        - Widgets
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: widget.id
+          required: true
+          description: The ID of the widget to delete
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Widget not found
 components:
   securitySchemes:
     bearerAuth:
