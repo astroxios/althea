@@ -12,9 +12,9 @@ export const registerUserController = async (req: Request, res: Response) => {
                 }
             });
         }
-        
+
         const { username, email, password } = data.attributes;
-const requiredAttributes = ['username', 'email', 'password'];
+        const requiredAttributes = ['username', 'email', 'password'];
 
         if (!requiredAttributes.every(attr => data.attributes.hasOwnProperty(attr))) {
             return res.status(400).json({
