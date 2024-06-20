@@ -1,30 +1,44 @@
 import { Request, Response } from 'express';
 import { registerUser, loginUser } from '../services/authService';
+import { getErrorResponse } from '../utils/errorHandler';
 
-export const register = async (req: Request, res: Response) => {
-    const { email, username, password } = req.body;
+export const registerUserController = async (req: Request, res: Response) => {
     try {
-        const user = await registerUser(email, username, password);
-        res.status(201).json({
-            message: 'User registration successful',
-            data: [
-                {
-                    id: user.id,
-                    username: user.username,
-                    access_token: user.access_token
+        const { data } = req.body;
+        const { type, attributes } = data;
+        const { username, email, password } = data.attributes;
+
+        // Check if type is "user" and attributes exist
+        if (type !== 'user' || !attributes) {
+            return res.status(400).json({
+                error: {
+                    detail: 'Invalid request. Type must be "user" and attributes such as username, email, and password must be provided.'
                 }
-            ]
-        })
-    } catch (error) {
-        if (error instanceof Error) {
-            if (error.message === 'Email already exists' || error.message === 'Username already exists') {
-                return res.status(409).json({ error: error.message });
-            }
-            res.status(400).json({ error: error.message });
-        } else {
-            res.status(500).json({ error: 'Internal Server Error' });
+            });
         }
-      }
+
+        const user = await registerUser(email, username, password);
+
+        // Set the Authorization header to Bearer <access_token>
+        res.setHeader('Authorization', `Bearer ${user.access_token}`);
+
+        res.status(201).json({
+            data: {
+                type: 'user',
+                id: user.id,
+                attributes: {
+                    username: user.username,
+                    email: user.email,
+                    created: user.created
+                }
+            }
+        });
+    } catch (error: any) {
+        const statusCode = error.message === 'Email already exists' || error.message === 'Username already exists' ? 409 : 500;
+
+        const errorResponse = getErrorResponse(statusCode);
+        res.status(statusCode).json(errorResponse);
+    }
 };
 
 export const login = async (req: Request, res: Response) => {
