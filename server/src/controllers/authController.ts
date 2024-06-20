@@ -15,7 +15,7 @@ export const registerUserController = async (req: Request, res: Response) => {
         if (!data || type !== 'user' || !attributes) {
             return res.status(400).json({
                 error: {
-                    detail: 'Invalid request. Type must be "user" and attributes must be provided.'
+                    message: 'Invalid request. Type must be "user" and attributes must be provided.'
                 }
             });
         }
@@ -26,7 +26,7 @@ export const registerUserController = async (req: Request, res: Response) => {
         if (!requiredAttributes.every(attr => data.attributes.hasOwnProperty(attr))) {
             return res.status(400).json({
                 error: {
-                    detail: 'Invalid request. Attributes such as username, email, and password must be provided.'
+                    message: 'Invalid request. Attributes such as username, email, and password must be provided.'
                 }
             });
         }
