@@ -26,8 +26,8 @@ model Widget {
   userId    Int
   typeId    Int
   is_active Boolean    @default(true)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  created   DateTime   @default(now())
+  updated   DateTime   @updatedAt
 
   @@map("widgets")
 }
