@@ -1,602 +1,742 @@
-openapi: '3.0.2'
+openapi: 3.0.2
 info:
-  title: Althea API
-  version: '1.0'
-  description: Althea is a portfolio project focused on creating a centralized platform for streamers and content creators.
+  title: Althea API v1.0.4
+  version: 1.0.4
+  description: >-
+    Althea is a portfolio project focused on creating a centralized platform for
+    streamers and content creators.
+  contact:
+    url: 'https://github.com/astroxios/althea'
   license:
-    name: GNU GPL v3
-    url: https://www.gnu.org/licenses/gpl-3.0.en.html
+    name: GNU GPLv3
+    url: 'https://www.gnu.org/licenses/gpl.txt'
 servers:
-  - url: https://althea.astroxios.com/api
+  - url: 'https://althea.astroxios.com/api'
     description: Main (production) server
-tags:
-  - name: Authentication
-    description: Operations related to user authentication, including registration, login, logout, and token refresh.
-  - name: Users
-    description: Operations related to user management, including creating, retrieving, updating, and deleting user profiles.
-  - name: Widgets
-    description: Operations related to widget management, including creating, retrieving, updating, and deleting widgets.
 paths:
-  /users/register:
+  /auth/register:
+    summary: Path used to register a single User.
+    description: >-
+      The REST endpoint/path used to create a single `User` entity. This path
+      contains a `POST` operation to perform the create task, respectively.
     post:
-      operationId: registerUser
-      summary: Register a new user
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+        required: true
       tags:
         - Authentication
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/RegisterRequest"
       responses:
         '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/RegisterResponse"
+          $ref: '#/components/responses/Register'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/Error'
         '409':
-          description: Conflict
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    description: A human-readable message describing the error.
-              examples:
-                Email:
-                  value:
-                    error:
-                      Email already exists
-                Username:
-                  value:
-                    error:
-                      Username already exists
+          $ref: '#/components/responses/Error'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/500 Internal Server Error"
+          $ref: '#/components/responses/Error'
+      security:
+        - {}
+      operationId: createUser
+      summary: Create a User
+      description: Creates a new instance of `User`.
   /auth/login:
+    summary: Path used to login a single User
+    description: >-
+      The REST endpoint/path used to login a single `User` entity. This path
+      contains a `POST` operation to perform the login task, respectively.
     post:
-      operationId: loginUser
-      summary: Login user
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+        required: true
       tags:
         - Authentication
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/LoginRequest"
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/LoginResponse"
+          $ref: '#/components/responses/Login'
         '401':
-          description: Unauthorized
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+          $ref: '#/components/responses/Error'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/500 Internal Server Error"
-  /users/{user.id}:
-    get:
-      operationId: getUser
-      summary: Retrieve a user
+          $ref: '#/components/responses/Error'
       security:
-        - bearerAuth: []
-      tags:
-        - Users
-      parameters:
-        - in: path
-          name: user.id
-          required: true
-          description: The ID of the user to retrieve
-          schema:
-            type: integer
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: User retrieval successful
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/User"
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: User not found
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/500 Internal Server Error"
-    patch:
-      operationId: updateUser
-      summary: Update a user
-      tags:
-        - Users
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: user.id
-          required: true
-          description: The ID of the user to update
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/UpdateUserRequest"
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: User update successful
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/User"
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: User not found
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/500 Internal Server Error"
-    delete:
-      operationId: deleteUser
-      summary: Delete a user
-      tags:
-        - Users
-      security:
-        - bearerAuth: []
-      parameters:
-        - in: path
-          name: user.id
-          required: true
-          description: The ID of the user to delete
-          schema:
-            type: integer
-      responses:
-        '204':
-          description: No Content
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: User not found
+        - {}
+      operationId: loginUser
+      summary: Login a User
+      description: Logs in a `User` instance.
   /users:
+    summary: Path used to manage the list of users.
+    description: >-
+      The REST endpoint/path used to list zero or more `User` entities. This
+      path contains a `GET` operation to perform the list task, respectively.
     get:
-      operationId: getUsers
-      summary: Retrieve multiple users
       tags:
         - Users
-      security:
-        - bearerAuth: []
       parameters:
-        - in: query
-          name: ids
-          required: true
-          description: The IDs of the users to retrieve, separated by commas (limit 100)
+        - name: ids
+          description: 'The IDs of the users to retrieve, separated by commas (limit 100).'
           schema:
             type: array
             items:
-              type: integer
-            format: csv
+              type: string
+          in: query
+          required: true
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: User retrieval successful
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/User"
+          $ref: '#/components/responses/GetUsers'
         '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-              examples:
-                Parameter:
-                  value:
-                    error: Parameter 'ids' are required
-                Fields:
-                  value:
-                    error:
-                      Invalid 'ids' parameter. Must be a comma-separated list of numbers.
+          $ref: '#/components/responses/Error'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: User not found
+          $ref: '#/components/responses/Error'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/500 Internal Server Error"
-  /widgets:
+          $ref: '#/components/responses/Error'
+      security:
+        - bearerAuth: []
+      operationId: getUsers
+      summary: List All Users
+      description: Gets a list of all `User` entities.
+  '/users/{userId}':
+    summary: Path used to manage multiple Users.
+    description: >-
+      The REST endpoint/path used to get, update, and delete single instances of
+      an `User`.  This path contains `GET`, `PUT`, and `DELETE` operations used
+      to perform the get, update, and delete tasks, respectively.
     get:
-      operationId: getWidgets
-      summary: Retrieve multiple widgets
-      description: Retrieves a list of widgets created by the currently authenticated user (requires JWT auth).
       tags:
-        - Widgets
+        - Users
       responses:
         '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Widget retrieval successful
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Widget"
+          $ref: '#/components/responses/GetUser'
+        '400':
+          $ref: '#/components/responses/Error'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Widgets not found
+          $ref: '#/components/responses/Error'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/500 Internal Server Error"
-    post:
-      operationId: createWidget
-      summary: Create a new widget
-      description: Creates a new widget for the currently authenticated user (requires JWT auth).
+          $ref: '#/components/responses/Error'
+      security:
+        - bearerAuth: []
+      operationId: getUser
+      summary: Get a User
+      description: Gets the details of a single instance of a `User`.
+    delete:
+      tags:
+        - Users
+      responses:
+        '204':
+          description: Successful response.
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      security:
+        - bearerAuth: []
+      operationId: deleteUser
+      summary: Delete a User
+      description: Deletes an existing `User`.
+    patch:
+      tags:
+        - Users
+      responses:
+        '202':
+          description: Successful response.
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      operationId: updateUser
+      summary: Update a User
+      description: Updates an existing `User`.
+    parameters:
+      - name: userId
+        description: A unique identifier for a `User`.
+        schema:
+          type: string
+        in: path
+        required: true
+  /widgets:
+    summary: Path used to manage the list of widgets.
+    description: >-
+      The REST endpoint/path used to list and create zero or more `Widget`
+      entities.  This path contains a `GET` and `POST` operation to perform the
+      list and create tasks, respectively.
+    get:
       tags:
         - Widgets
+      parameters:
+        - name: ids
+          description: 'The IDs of the widgets to retrieve, separated by commas (limit 10).'
+          schema:
+            type: array
+            items:
+              type: string
+          in: query
+          required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/GetWidgets'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      security:
+        - bearerAuth: []
+      operationId: getWidgets
+      summary: List All Widgets
+      description: Gets a list of all `Widget` entities.
+    post:
       requestBody:
-        required: true
+        description: A new `Widget` to be created.
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/CreateWidgetRequest"
+              $ref: '#/components/schemas/WidgetRequest'
+        required: true
+      tags:
+        - Widgets
       responses:
         '201':
-          description: Created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: Widget creation successful
-                  data:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/Widget"
-        '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/500 Internal Server Error"
-    patch:
-      operationId: updateWidget
-      summary: Update a widget
-      description: Updates an existing widget for the currently authenticated user (requires JWT auth).
-      tags:
-        - Widgets
-      responses:
-        '200':
-            description: OK
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    message:
-                      type: string
-                      example: Widget update successful
-                    data:
-                      type: array
-                      items:
-                        $ref: "#/components/schemas/UpdateWidgetResponse"
+          description: Successful response.
+        '400':
+          $ref: '#/components/responses/Error'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Widget not found
+          $ref: '#/components/responses/Error'
         '500':
-          description: Internal Server Error
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/500 Internal Server Error"
-    delete:
-      operationId: deleteWidget
-      summary: Delete a widget
-      description: Deletes a widget with the specified ID.
-      tags:
-        - Widgets
+          $ref: '#/components/responses/Error'
       security:
         - bearerAuth: []
+      operationId: createWidget
+      summary: Create a Widget
+      description: Creates a new instance of a `Widget`.
+  '/widgets/{widgetId}':
+    get:
+      tags:
+        - Widgets
       parameters:
-        - in: path
-          name: widget.id
-          required: true
-          description: The ID of the widget to delete
+        - name: widgetId
+          description: A unique identifier for a Widget.
           schema:
-            type: integer
+            type: string
+          in: path
+          required: true
+      responses:
+        '200':
+          $ref: '#/components/responses/GetWidget'
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      security:
+        - bearerAuth: []
+      operationId: getWidget
+      summary: Get a Widget
+      description: Gets the details of a single instance of a `Widget`.
+    delete:
+      tags:
+        - Widgets
+      parameters:
+        - name: widgetId
+          description: A unique identifier for a Widget.
+          schema:
+            type: string
+          in: path
+          required: true
       responses:
         '204':
-          description: No Content
+          description: Successful response.
+        '400':
+          $ref: '#/components/responses/Error'
         '404':
-          description: Not Found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-                    example: Widget not found
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      operationId: deleteWidget
+      summary: Delete a Widget
+      description: Deletes an existing `Widget`.
+    patch:
+      tags:
+        - Widgets
+      parameters:
+        - name: widgetId
+          description: A unique identifier for a Widget.
+          schema:
+            type: string
+          in: path
+          required: true
+      responses:
+        '202':
+          description: Successful response.
+        '400':
+          $ref: '#/components/responses/Error'
+        '404':
+          $ref: '#/components/responses/Error'
+        '500':
+          $ref: '#/components/responses/Error'
+      security:
+        - bearerAuth: []
+      operationId: updateWidget
+      summary: Update a Widget
+      description: Updates an existing `Widget`.
+    parameters:
+      - name: widgetId
+        description: A unique identifier for a Widget.
+        schema:
+          type: string
+        in: path
+        required: true
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
   schemas:
-    RegisterRequest:
-      type: object
+    UserResource:
+      description: ''
       required:
-        - username
-        - email
-        - password
-      properties:
-        username:
-          type: string
-          format: username
-          minLength: 3
-          maxLength: 20
-        email:
-          type: string
-          format: email
-        password:
-          type: string
-          format: password
-          minLength: 8
-          maxLength: 64
-    RegisterResponse:
+        - type
+        - id
+        - attributes
       type: object
       properties:
-        message:
+        type:
           type: string
-          example: User registration successful
+        id:
+          type: string
+        attributes:
+          required:
+            - username
+            - email
+            - created
+          type: object
+          properties:
+            avatar_url:
+              format: uri
+              type: string
+            nickname:
+              type: string
+            username:
+              type: string
+            email:
+              type: string
+            created:
+              format: date-time
+              type: string
+            updated:
+              format: date-time
+              type: string
+      example:
+        type: user
+        id: '1802317729898692608'
+        attributes:
+          avatar_url: >-
+            data:image/jpeg;charset=utf-8,https%3A%2F%2Frandomuser.me%2Fapi%2Fportraits%2Fmen%2F37.jpg
+          nickname: jd213
+          username: johndoe
+          email: johndoe@example.com
+          created: '2024-06-18T12:00:00Z'
+          updated: '2024-06-18T12:00:00Z'
+    RegisterRequest:
+      description: ''
+      required:
+        - data
+      type: object
+      properties:
         data:
+          required:
+            - type
+            - attributes
+          type: object
+          properties:
+            type:
+              type: string
+            attributes:
+              required:
+                - username
+                - email
+                - password
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      example:
+        data:
+          type: user
+          attributes:
+            email: johndoe@example.com
+            username: johndoe
+            password: password123
+    LoginRequest:
+      description: ''
+      required:
+        - data
+      type: object
+      properties:
+        data:
+          required:
+            - type
+            - attributes
+          type: object
+          properties:
+            type:
+              type: string
+            attributes:
+              required:
+                - email
+                - password
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      example:
+        data:
+          type: user
+          attributes:
+            email: johndoe@example.com
+            password: password123
+    ErrorResource:
+      description: ''
+      required:
+        - errors
+      type: object
+      properties:
+        errors:
           type: array
           items:
+            required:
+              - id
+              - code
+              - status
+              - title
+              - detail
             type: object
             properties:
               id:
-                type: integer
-                format: int64
-                example: 1
-              username:
+                description: >-
+                  A unique identifier for this particular occurrence of the
+                  problem.
                 type: string
-                format: username
-                example: username
-              access_token:
+              code:
+                description: >-
+                  An application-specific error code, expressed as a string
+                  value.
                 type: string
-                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZTVAZXhhbXBsZS5jb20iLCJpYXQiOjE3MTgwNDM5MTgsImV4cCI6MTcxODA0NzUxOH0.qYTXIw6JtLQ8mFvO76KPYhOJLuMQz7yfGkuFqlI5IF4
-    LoginRequest:
+              status:
+                description: >-
+                  The HTTP status code applicable to this problem, expressed as
+                  a string value.
+                type: string
+              source:
+                type: object
+                properties:
+                  pointer:
+                    description: >-
+                      A JSON Pointer [RFC6901] to the value in the request that
+                      caused the error (e.g. primary data object or specific
+                      attribute).
+                    type: string
+                  parameter:
+                    description: >-
+                      A string indicating which URI query parameter caused the
+                      error.
+                    type: string
+                  header:
+                    description: >-
+                      A string indicating the name of a single request header
+                      which caused the error.
+                    type: string
+                additionalProperties: false
+              title:
+                description: >-
+                  A short, human-readable summary of the problem. It **SHOULD
+                  NOT** change from occurrence to occurrence of the problem,
+                  except for purposes of localization.
+                type: string
+              detail:
+                description: >-
+                  A human-readable explanation specific to this occurrence of
+                  the problem.
+                type: string
+      example:
+        errors:
+          - id: '1802317729898692608'
+            code: Internal server error
+            status: '500'
+            source:
+              pointer: /data/attributes
+              parameter: id
+              header: Access-Control-Allow-Origin
+            title: Error
+            detail: >-
+              We notified our engineers and hope to address this issue, as soon
+              as possible.
+          - id: '1802317729898692609'
+            code: Invalid request
+            status: '400'
+            source:
+              pointer: /data/attributes/name
+              parameter: name
+              header: Content-Type
+            title: Validation Error
+            detail: The 'name' attribute is required.
+    GetUsers:
+      description: ''
       type: object
-      required:
-        - email
-        - password
       properties:
-        email:
-          type: string
-          format: email
-          maxLength: 320
-        password:
-          type: string
-          format: password
-          minLength: 8
-          maxLength: 64
-          example: password123
-    RefreshRequest:
-      type: object
-      properties:
-        refreshToken:
-          type: string
-          description: The refresh token to be used for obtaining a new access token
-    LoginResponse:
-      type: object
-      properties:
-        message:
-          type: string
-          example: User login successful
         data:
           type: array
           items:
-            type: object
-            properties:
-              access_token:
-                type: string
-                example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZTVAZXhhbXBsZS5jb20iLCJpYXQiOjE3MTgwNDM5MTgsImV4cCI6MTcxODA0NzUxOH0.qYTXIw6JtLQ8mFvO76KPYhOJLuMQz7yfGkuFqlI5IF4
-    LogoutRequest:
+            $ref: '#/components/schemas/UserResource'
+      example:
+        data:
+          - type: user
+            id: '1802317729898692608'
+            attributes:
+              avatar_url: >-
+                data:image/jpeg;charset=utf-8,https%3A%2F%2Frandomuser.me%2Fapi%2Fportraits%2Fmen%2F37.jpg
+              nickname: jd213
+              username: janedoe
+              email: janedoe@example.com
+              created: '2024-06-18T12:00:00Z'
+              updated: '2024-06-18T12:00:00Z'
+          - type: user
+            id: '180231772922292608'
+            attributes:
+              avatar_url: >-
+                data:image/jpeg;charset=utf-8,https%3A%2F%2Frandomuser.me%2Fapi%2Fportraits%2Fwomen%2F19.jpg
+              nickname: jd123
+              username: johndoe
+              email: johndoe@example.com
+              created: '2024-06-18T12:00:00Z'
+              updated: '2024-06-18T12:00:00Z'
+    GetUser:
+      description: ''
       type: object
       properties:
-        access_token:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/UserResource'
+      example:
+        data:
+          - type: user
+            id: '1802317729898692608'
+            attributes:
+              avatar_url: >-
+                data:image/jpeg;charset=utf-8,https%3A%2F%2Frandomuser.me%2Fapi%2Fportraits%2Fmen%2F37.jpg
+              nickname: jd213
+              username: janedoe
+              email: janedoe@example.com
+              created: '2024-06-18T12:00:00Z'
+              updated: '2024-06-18T12:00:00Z'
+    WidgetResource:
+      description: ''
+      required:
+        - type
+        - attributes
+      type: object
+      properties:
+        type:
           type: string
-          description: The access token to be revoked during logout
-    User:
-      type: object
-      properties:
         id:
-          type: integer
-          format: int64
-        username:
           type: string
-          format: username
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    UpdateUserRequest:
+        attributes:
+          required:
+            - widget_type
+          type: object
+          properties:
+            is_active:
+              type: boolean
+            widget_type:
+              type: string
+            created:
+              format: datetime
+              type: string
+            updated:
+              format: datetime
+              type: string
+      example:
+        type: widget
+        id: '1802317729898692608'
+        attributes:
+          is_active: true
+          widget_type: Stream Schedule
+          created: '2024-06-18T12:00:00Z'
+          updated: '2024-06-18T12:00:00Z'
+    GetWidget:
+      description: ''
       type: object
       properties:
-        email:
-          type: string
-          format: email
-        username:
-          type: string
-          format: username
-          minLength: 3
-          maxLength: 20
-          example: username
-        password:
-          type: string
-          format: password
-          minLength: 8
-          maxLength: 64
-          example: password
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WidgetResource'
+      example:
+        data:
+          - type: widget
+            id: '1802317729898692608'
+            attributes:
+              is_active: true
+              widget_type: Stream Schedule
+              created: '2024-06-18T12:00:00Z'
+              updated: '2024-06-18T12:00:00Z'
+    GetWidgets:
+      description: ''
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/WidgetResource'
+      example:
+        data:
+          - type: widget
+            id: '1802317729898692608'
+            attributes:
+              is_active: true
+              widget_type: Stream Schedule
+              created: '2024-06-18T12:00:00Z'
+              updated: '2024-06-18T12:00:00Z'
+          - type: widget
+            id: '1802317722128692608'
+            attributes:
+              is_active: true
+              widget_type: Community Polls
+              created: '2024-06-18T12:00:00Z'
+              updated: '2024-06-18T12:00:00Z'
+    WidgetRequest:
+      description: ''
+      required:
+        - data
+      type: object
+      properties:
+        data:
+          required:
+            - type
+            - attributes
+          type: object
+          properties:
+            type:
+              type: string
+            attributes:
+              required:
+                - widget_type
+              type: object
+              properties:
+                widget_type:
+                  type: string
+      example:
+        data:
+          type: widget
+          attributes:
+            widget_type: Stream Schedule
+  responses:
+    Register:
+      headers:
+        Location:
+          schema:
+            type: string
+          examples:
+            Location of the new resource:
+              value: 'https://althea.astroxios.com/users/1802317729898692608'
+        Authorization:
+          schema:
+            type: string
+          examples:
+            access_token:
+              value: >-
+                Bearer
+                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZTVAZXhhbXBsZS5jb20iLCJpYXQiOjE3MTgwNDM5MTgsImV4cCI6MTcxODA0NzUxOH0.qYTXIw6JtLQ8mFvO76KPYhOJLuMQz7yfGkuFqlI5IF4
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserResource'
+      description: Successful response.
+    Login:
+      headers:
+        Authorization:
+          schema:
+            type: string
+          examples:
+            access_token:
+              value: >-
+                Bearer
+                eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJqb2huLmRvZTVAZXhhbXBsZS5jb20iLCJpYXQiOjE3MTgwNDM5MTgsImV4cCI6MTcxODA0NzUxOH0.qYTXIw6JtLQ8mFvO76KPYhOJLuMQz7yfGkuFqlI5IF4
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/UserResource'
+      description: ''
     Error:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A human-readable message describing the error.
-    500 Internal Server Error:
-      type: object
-      properties:
-        error:
-          type: string
-          description: A human-readable message describing the error.
-          example: Internal Server Error
-    CreateWidgetRequest:
-      type: object
-      properties:
-        widget_type:
-          type: string
-          example: Stream Schedule
-    Widget:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        widget_type:
-          type: string
-          example: Stream Schedule
-        createdAt:
-          type: string
-          format: date-time
-    UpdateWidgetResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-        widget_type:
-          type: string
-          example: Stream Schedule
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResource'
+      description: ''
+    GetUsers:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetUsers'
+      description: ''
+    GetUser:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetUser'
+      description: ''
+    GetWidget:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetWidget'
+      description: ''
+    GetWidgets:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/GetWidgets'
+      description: ''
+    CreateWidget:
+      headers:
+        Location:
+          schema:
+            type: string
+          examples:
+            Location of the new resource:
+              value: 'https://althea.astroxios.com/widgets/1802317729898692608'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/WidgetResource'
+      description: ''
+  securitySchemes:
+    bearerAuth:
+      scheme: bearer
+      type: http
+      description: JSON Web Token (JWT) used for Authentication
+tags:
+  - name: Authentication
+    description: >-
+      Operations related to user authentication, including registration and
+      login.
+  - name: Users
+    description: >-
+      Operations related to user management, including creating, retrieving,
+      updating, and deleting users.
+  - name: Widgets
+    description: >-
+      Operations related to widget management, including creating, retrieving,
+      updating, and deleting widgets.
