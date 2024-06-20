@@ -5,14 +5,21 @@ import { getErrorResponse } from '../utils/errorHandler';
 export const registerUserController = async (req: Request, res: Response) => {
     try {
         const { data } = req.body;
-        const { type, attributes } = data;
-        const { username, email, password } = data.attributes;
-
-        // Check if type is "user" and attributes exist
-        if (type !== 'user' || !attributes) {
+        if (!data || data.type !== 'user' || !data.attributes) {
             return res.status(400).json({
                 error: {
-                    detail: 'Invalid request. Type must be "user" and attributes such as username, email, and password must be provided.'
+                    detail: 'Invalid request. Type must be "user" and attributes must be provided.'
+                }
+            });
+        }
+        
+        const { username, email, password } = data.attributes;
+const requiredAttributes = ['username', 'email', 'password'];
+
+        if (!requiredAttributes.every(attr => data.attributes.hasOwnProperty(attr))) {
+            return res.status(400).json({
+                error: {
+                    detail: 'Invalid request. Attributes such as username, email, and password must be provided.'
                 }
             });
         }
