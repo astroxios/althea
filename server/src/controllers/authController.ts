@@ -6,16 +6,11 @@ import { serializeObject } from '../utils/objectSerializer';
 export const registerUserController = async (req: Request, res: Response) => {
     try {
         const { data } = req.body;
-        const { type, attributes } = data;
 
-        if (!req.body || !req.body.data || !req.body.data.attributes) {
-            throw new Error('Invalid request. Data and attributes must be provided.');
-        }
-
-        if (!data || type !== 'user' || !attributes) {
+        if (!data || data.type !== 'user' || !data.attributes) {
             return res.status(400).json({
                 error: {
-                    message: 'Invalid request. Type must be "user" and attributes must be provided.'
+                    message: "Invalid request. Please ensure the JSON request body contains a data object with a type set to 'user', and includes attributes."
                 }
             });
         }
@@ -36,7 +31,10 @@ export const registerUserController = async (req: Request, res: Response) => {
         // Set the Authorization header to Bearer <access_token>
         res.setHeader('Authorization', `Bearer ${user.access_token}`);
 
-        const response = serializeObject('user', user, ['password', 'updated', 'access_token']);
+        const excludeProperties = ['password', 'updated', 'access_token'];
+
+        const response = serializeObject('user', user, excludeProperties);
+
         res.status(201).json(response);
     } catch (error: any) {
         const statusCode = error.message === 'Email already exists' || error.message === 'Username already exists' ? 409 : 500;
@@ -58,16 +56,11 @@ export const registerUserController = async (req: Request, res: Response) => {
 export const loginUserController = async (req: Request, res: Response) => {
     try {
         const { data } = req.body;
-        const { type, attributes } = data;
 
-        if (!req.body || !req.body.data || !req.body.data.attributes) {
-            throw new Error('Invalid request. Data and attributes must be provided.');
-        }
-
-        if (!data || type !== 'user' || !attributes) {
+        if (!data || data.type !== 'user' || !data.attributes) {
             return res.status(400).json({
                 error: {
-                    detail: 'Invalid request. Type must be "user" and attributes must be provided.'
+                    message: "Invalid request. Please ensure the JSON request body contains a data object with a type set to 'user', and includes attributes."
                 }
             });
         }
@@ -88,7 +81,9 @@ export const loginUserController = async (req: Request, res: Response) => {
         // Set the Authorization header to Bearer <access_token>
         res.setHeader('Authorization', `Bearer ${user.access_token}`);
 
-        const response = serializeObject('user', user, ['password', 'updated', 'access_token']);
+        const excludeProperties = ['password', 'updated', 'access_token'];
+
+        const response = serializeObject('user', user, excludeProperties);
 
         res.status(200).json(response);
     } catch (error: any) {
