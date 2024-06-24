@@ -22,7 +22,7 @@ paths:
     post:
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
               $ref: '#/components/schemas/RegisterRequest'
         required: true
@@ -50,7 +50,7 @@ paths:
     post:
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
               $ref: '#/components/schemas/LoginRequest'
         required: true
@@ -59,7 +59,7 @@ paths:
       responses:
         '200':
           $ref: '#/components/responses/Login'
-        '401':
+        '400':
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
@@ -140,6 +140,12 @@ paths:
       summary: Delete a User
       description: Deletes an existing `User`.
     patch:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchUser'
+        required: true
       tags:
         - Users
       responses:
@@ -151,6 +157,8 @@ paths:
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
+      security:
+        - bearerAuth: []
       operationId: updateUser
       summary: Update a User
       description: Updates an existing `User`.
@@ -261,10 +269,18 @@ paths:
           $ref: '#/components/responses/Error'
         '500':
           $ref: '#/components/responses/Error'
+      security:
+        - bearerAuth: []
       operationId: deleteWidget
       summary: Delete a Widget
       description: Deletes an existing `Widget`.
     patch:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchWidget'
+        required: true
       tags:
         - Widgets
       parameters:
@@ -576,6 +592,28 @@ components:
           type: widget
           attributes:
             widget_type: Stream Schedule
+    PatchUser:
+      description: ''
+      type: object
+      example:
+        data:
+          type: user
+          attributes:
+            avatar_url: >-
+              data:image/jpeg;charset=utf-8,https%3A%2F%2Frandomuser.me%2Fapi%2Fportraits%2Fmen%2F37.jpg
+            nickname: jd213
+            username: johndoe
+            email: johndoe@example.com
+            updated: '2024-06-18T12:00:00Z'
+    PatchWidget:
+      description: ''
+      type: object
+      example:
+        data:
+          type: widget
+          attributes:
+            is_active: true
+            updated: '2024-06-18T12:00:00Z'
   responses:
     Register:
       headers:
