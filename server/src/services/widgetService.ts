@@ -1,5 +1,6 @@
 import widgetModel from "../models/widgetModel";
 import widgetTypeModel from "../models/widgetTypeModel";
+import redisClient from "../redisClient";
 
 export const getWidgetById = async (id: number) => {
     return await widgetModel.findUnique({
@@ -40,7 +41,7 @@ export const createWidget = async (userId: number, widget_type: string) => {
     });
 
     if (!widgetType) {
-        throw new Error(`Widget type "${widget_type}" not found`);
+        throw new Error('Widget type not found');
     }
 
     const widget = await widgetModel.create({
@@ -57,18 +58,29 @@ export const createWidget = async (userId: number, widget_type: string) => {
     return {
         ...widget,
         typeName: widget.type.name, // Include the name of the WidgetType
-        createdAt: widget.createdAt // Include the creation timestamp
+        created: widget.created // Include the creation timestamp
     };
 };
 
-export const updateWidget = async (id: number, isActive: boolean) => {
-    return await widgetModel.update({
+export const updateWidget = async (id: number, data: any) => {
+    const widget = await widgetModel.findUnique({ where: { id } });
+
+    if (!widget) {
+        throw new Error('Widget not found');
+    }
+
+    const updatedWidget = await widgetModel.update({
         where: { id },
-        data: { is_active: isActive },
+        data,
         include: {
             type: true,
         }
     });
+
+    // Clear the old cache
+    await redisClient.del(id.toString());
+
+    return updatedWidget;
 };
 
 export const deleteWidget = async (id: number) => {

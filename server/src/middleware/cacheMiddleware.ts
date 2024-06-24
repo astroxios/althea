@@ -7,8 +7,12 @@ export const generateETag = (data: any): string => {
 };
 
 export const cacheMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.method !== 'GET') {
+        return next();
+    }
+
     const { id } = req.params;
-    const queryKey = id ? `user:${id}` : `users:${JSON.stringify(req.query)}`;
+    const queryKey = id ? `widget:${id}` : `widgets:${JSON.stringify(req.query)}`;
 
     try {
         const cachedData = await redisClient.get(queryKey);

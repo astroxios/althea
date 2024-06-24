@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { getUserById, updateUser, deleteUser, getUsersByIds } from '../services/userService';
 import { generateETag } from '../middleware/cacheMiddleware';
 import redisClient from '../redisClient';
-import { serializeObject } from '../utils/objectSerializer';
+import { serializeObject, serializeObjects } from '../utils/objectSerializer';
 import { getErrorResponse } from '../utils/errorHandler';
 import { validationResult } from 'express-validator';
 
@@ -76,7 +76,7 @@ export const getUsersController = async (req: Request, res: Response) => {
 
         const excludeProperties = ['email', 'password', 'updated'];
 
-        const response = users.map(users => serializeObject('user', users, excludeProperties));
+        const response = serializeObjects('user', users, excludeProperties);
 
         res.status(200).json(response)
     } catch (error) {
@@ -95,7 +95,7 @@ export const updateUserController = async (req: Request, res: Response) => {
             return res.status(400).json({ errors: errors.array() });
         }
 
-        const data = req.body;
+        const data = req.body.data;
 
         if (!data || data.type !== 'user' || !data.attributes) {
             return res.status(400).json({
