@@ -8,7 +8,7 @@ import { validationResult } from 'express-validator';
 
 export const getUserController = async (req: Request, res: Response) => {
     try {
-        const { userId } = req.params;
+        const userId = req.params.id;
         const user  = req.user;
 
         // Check if the provided id is a number
@@ -93,6 +93,15 @@ export const updateUserController = async (req: Request, res: Response) => {
 
         if (!errors.isEmpty()) {
             return res.status(400).json({ errors: errors.array() });
+        }
+
+        // Check if the provided id is a number
+        if (isNaN(Number(userId))) {
+            return res.status(400).json({
+                error: {
+                    message: 'Invalid request. The provided ID is not a valid user ID.'
+                }
+            });
         }
 
         const data = req.body.data;

@@ -123,6 +123,15 @@ export const updateWidget = async (req: Request, res: Response) => {
         const widgetId = req.params.id as string;
         const data = req.body.data;
 
+        // Check if the provided id is a number
+        if (isNaN(Number(widgetId))) {
+            return res.status(400).json({
+                error: {
+                    message: 'Invalid request. The provided ID is not a valid widget ID.'
+                }
+            });
+        }
+
         if (!data || data.type !== 'widget' || !data.attributes) {
             return res.status(400).json({
                 error: {

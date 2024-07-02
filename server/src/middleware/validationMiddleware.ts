@@ -4,7 +4,10 @@ export const registerValidationRules = (): ValidationChain[] => {
     return [
         body('data.type')
             .equals('user')
-            .withMessage('Type must be "user"'),
+            .withMessage("Invalid request. Please ensure the JSON request body contains a data object with a type set to 'user', and includes attributes."),
+        body('data.attributes')
+            .isObject()
+            .withMessage("Invalid request. Please ensure the JSON request body contains a data object with a type set to 'user', and includes attributes."),
         body('data.attributes.email')
             .isEmail()
             .withMessage('Email must be valid'),

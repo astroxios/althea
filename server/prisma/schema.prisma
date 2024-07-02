@@ -14,14 +14,14 @@ model User {
   password String
   created  DateTime @default(now())
   updated  DateTime @updatedAt
-  Widget   Widget[]
+  widgets  Widget[]
 
   @@map("users")
 }
 
 model Widget {
   id        Int        @id @default(autoincrement())
-  user      User       @relation(fields: [userId], references: [id])
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   type      WidgetType @relation(fields: [typeId], references: [id])
   userId    Int
   typeId    Int

@@ -7,14 +7,6 @@ export const registerUserController = async (req: Request, res: Response) => {
     try {
         const { data } = req.body;
 
-        if (!data || data.type !== 'user' || !data.attributes) {
-            return res.status(400).json({
-                error: {
-                    message: "Invalid request. Please ensure the JSON request body contains a data object with a type set to 'user', and includes attributes."
-                }
-            });
-        }
-
         const { username, email, password } = data.attributes;
         const requiredAttributes = ['username', 'email', 'password'];
 
@@ -94,7 +86,7 @@ export const loginUserController = async (req: Request, res: Response) => {
             errorResponse = {
                 status: statusCode,
                 message: 'Invalid credentials',
-                detail: 'The client has provided incorrect username or password. Please check credentials and try again.'
+                detail: 'The client has provided incorrect email or password. Please check credentials and try again.'
             };
         } else {
             errorResponse = getErrorResponse(statusCode);

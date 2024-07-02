@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticateToken } from '../src/middleware/authMiddleware';
+import { authenticate } from '../src/middleware/authMiddleware';
 import { registerValidationRules, patchValidationRules } from '../src/middleware/validationMiddleware';
 import { handleValidationErrors } from '../src/middleware/handleValidationErrors';
 
@@ -15,7 +15,7 @@ mockApp.patch('/update', patchValidationRules(), handleValidationErrors, (req: e
     res.status(200).json({ message: 'Update successful' });
 });
 
-mockApp.get('/protected', authenticateToken, (req: express.Request, res: express.Response) => {
+mockApp.get('/protected', authenticate, (req: express.Request, res: express.Response) => {
     res.status(200).json({ id: req.user.id, email: req.user.email });
 });
 
