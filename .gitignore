@@ -81,3 +81,4 @@ typings/
 
 # Vscode
 .vscode/
+server/potato.http
