@@ -26,9 +26,3 @@ CREATE TABLE "widgets" (
     CONSTRAINT "widgets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE,
     CONSTRAINT "widgets_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "widget_types"("id") ON DELETE CASCADE
 );
-
--- AddForeignKey
-ALTER TABLE "widgets" ADD CONSTRAINT "widgets_userId_fkey" FOREIGN KEY ("userId") REFERENCES "users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "widgets" ADD CONSTRAINT "widgets_typeId_fkey" FOREIGN KEY ("typeId") REFERENCES "widget_types"("id") ON DELETE CASCADE ON UPDATE CASCADE;
