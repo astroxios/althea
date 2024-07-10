@@ -5,6 +5,7 @@ import { cn } from "src/libs/utils"
 const inputVariants = cva("rounded-md ring-0", {
     variants: {
         variant: {
+            default: "",
             Light: "",
             Dark: "",
             Ghost: "bg-transparent border border-[#B0B0B0] shadow-inner placeholder-raisinBlack focus:outline-none"
