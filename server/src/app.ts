@@ -10,7 +10,13 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const app = express();
 
-app.use(cors());
+const corsOptions = {
+    origin: '*',
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    exposedHeaders: ['Authorization']
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use('/api', authRoutes)
