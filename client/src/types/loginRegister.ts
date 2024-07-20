@@ -1,31 +1,47 @@
 import { z } from "zod"
 
+export type cookieOptions = {
+    expires?: number | Date
+    path?: string
+    domain?: string
+    secure?: boolean
+    httpOnly?: boolean
+    sameSite?: 'Strict' | 'Lax' | 'None'
+}
+
+export type authenticationContext = {
+    isAuthenticated: boolean
+    login: () => void
+    logout: () => void
+}
+
 export const loginSchema = z.object({
     // Username must be at least 3 characters long, and can only contain letters, numbers, and underscores
-    emailOrUsername: 
-    z.string()
-    .trim()
-    .regex(/^[a-zA-Z0-9_]+$/, "Invalid username.")
-    .min(3, "Username must be at least 3 characters long.")
-    .max(30, "Username must be less than 30 characters long.")
-    .toLowerCase()
-    .or(z.string().email("Invalid email address.").trim().toLowerCase()),
+    // emailOrUsername: 
+    // z.string()
+    // .trim()
+    // .regex(/^[a-zA-Z0-9_]+$/, "Invalid username.")
+    // .min(3, "Username must be at least 3 characters long.")
+    // .max(30, "Username must be less than 30 characters long.")
+    // .toLowerCase()
+    // .or(z.string().email("Invalid email address.").trim().toLowerCase()),
+    email: z.string().email("Invalid email address.").trim().toLowerCase(),
     password: z.string()
     .trim()
     .min(8, "Password must be at least 8 characters long.")
     .max(128, "Password must be less than 128 characters long.")
     .refine((val) => {
         // Check for at least one digit
-        if (!/\d/.test(val)) return false;
+        if (!/\d/.test(val)) return false
       
         // Check for at least one lowercase letter
-        if (!/[a-z]/.test(val)) return false;
+        if (!/[a-z]/.test(val)) return false
       
         // Check for at least one uppercase letter
-        if (!/[A-Z]/.test(val)) return false;
+        if (!/[A-Z]/.test(val)) return false
       
         // Check for at least one symbol
-        if (!/[!@#$%^&*(),.?":{}|<>]/.test(val)) return false;
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(val)) return false
       
         return true;
       }, "Password must include a number, uppercase and lowercase letters, and a symbol.")
