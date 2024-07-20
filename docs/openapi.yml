@@ -327,6 +327,27 @@ paths:
                     type: string
                 in: path
                 required: true
+    /users/@me:
+        summary: Path used to manage the current user.
+        description: >-
+            The endpoint/path used to get, update, and delete the current instance of an `User`. This path
+            contains `GET`, `PUT`, and `DELETE` operations used to perform the get, update, and delete tasks,
+            respectively.
+
+
+            The endpoint/path is still a work in progress.
+        get:
+            tags:
+                - Users
+            responses:
+                '200':
+                    $ref: '#/components/responses/GetUser'
+            security:
+                -
+                    bearerAuth: []
+            operationId: getCurrentUser
+            summary: Get a current User
+            description: Gets the details for the current instance of a `User`.
 components:
     schemas:
         UserResource:
