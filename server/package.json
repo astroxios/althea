@@ -3,7 +3,8 @@
   "module": "server.ts",
   "scripts": {
     "dev": "bun --hot run src/server.ts",
-    "seed": "node prisma/seed.js"
+    "seed": "node prisma/seed.js",
+    "test": "bunx jest --runInBand"
   },
   "devDependencies": {
     "@types/bun": "latest"
