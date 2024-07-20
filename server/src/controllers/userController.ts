@@ -6,10 +6,49 @@ import { serializeObject, serializeObjects } from '../utils/objectSerializer';
 import { getErrorResponse } from '../utils/errorHandler';
 import { validationResult } from 'express-validator';
 
+export const getCurrentUser = async (req: Request, res: Response) => {
+    try {
+        // Extract the decoded token stored in req.user by the authMiddleware
+        const user = req.user; // req.user is the decoded token from authMiddleware
+
+        // The user ID from the token
+        const userId = user.id;
+
+        if (isNaN(Number(userId))) {
+            return res.status(400).json({
+                error: {
+                message:
+                    "Invalid request. The provided ID is not a valid user ID.",
+                },
+            });
+        }
+
+        const currentUser = await getUserById(Number(userId));
+        if (!currentUser) {
+            return res.status(404).json({
+                error: {
+                    message: "User not found"
+                }
+            });
+        }
+
+        const excludeProperties = ['password'];
+        const response = serializeObject('user', currentUser, excludeProperties);
+
+        res.status(200).json(response);
+    } catch (error) {
+        const errorResponse = getErrorResponse(500);
+        res.status(500).json(errorResponse);
+    }
+};
+
 export const getUserController = async (req: Request, res: Response) => {
     try {
+        // Extract the decoded token stored in req.user by the authMiddleware
+        const user  = req.user; // req.user is the decoded token from authMiddleware
+
+        // The user ID from the request params
         const userId = req.params.id;
-        const user  = req.user;
 
         // Check if the provided id is a number
         if (isNaN(Number(userId))) {
