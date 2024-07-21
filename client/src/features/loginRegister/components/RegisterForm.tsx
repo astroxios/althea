@@ -65,7 +65,7 @@ export const RegisterForm = () => {
               <p className="text-center text-raisinBlack text-lg">OR</p>
               <div className="h-px w-full bg-raisinBlack" />
             </div>
-            <Button variant="Ghost" className="flex items-center justify-center gap-3 text-lg hover:bg-[#ECECEC] w-full border-raisinBlack">
+            <Button variant="Ghost" className="flex items-center justify-center gap-3 text-lg hover:bg-[#ECECEC] w-full border-raisinBlack hover:border-[#ECECEC]">
               <img src={GoogleLogo} alt="Google logo" className="h-6 w-auto" />
               <p className="text-[16px]">Sign up with Google</p>
             </Button>
@@ -122,7 +122,7 @@ export const RegisterForm = () => {
               )}
             </div>
           )}
-        </div>
+        </div>  
         <div className="mt-4 mx-auto grid gap-3 w-fit">
           <div className="w-full flex flex-col items-center gap-4">
             {step === 1 && <Button onClick={() => onSubmit()} variant="BlueHeath" size="squareMD" className="text-2xl py-4">&#10140;</Button>}
